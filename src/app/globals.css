@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    radial-gradient(circle at top, rgba(14, 165, 233, 0.08), transparent 25%),
+    var(--background);
+  color: var(--foreground);
+}
+
+@theme inline {
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+}
+
+.font-serif {
+  font-family: var(--font-serif), serif;
+}
+
+.prose :where(p):not(:where([class~="not-prose"] *)) {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prose :where(h2, h3, h4):not(:where([class~="not-prose"] *)) {
+  font-family: var(--font-serif), serif;
+}

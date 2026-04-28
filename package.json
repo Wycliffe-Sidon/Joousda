@@ -1,0 +1,40 @@
+{
+  "name": "joousda-site",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "db:init": "node --experimental-strip-types --experimental-specifier-resolution=node scripts/db-init.mjs"
+  },
+  "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "bcryptjs": "^3.0.2",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.2",
+    "lucide-react": "^0.511.0",
+    "next": "^15.5.0",
+    "next-auth": "^5.0.0-beta.25",
+    "next-themes": "^0.4.6",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "react-markdown": "^10.1.0",
+    "tailwind-merge": "^3.3.0",
+    "zod": "^3.25.56"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.7",
+    "@types/node": "^20.17.50",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.5",
+    "drizzle-kit": "^0.31.1",
+    "eslint": "^9.27.0",
+    "eslint-config-next": "15.3.3",
+    "tailwindcss": "^4.1.7",
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
+  }
+}
