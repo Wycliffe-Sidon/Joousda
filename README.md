@@ -114,7 +114,4 @@ npm run dev
 4. Run `npm run db:init`.
 5. Run `npm run build && npm run start`.
 
-## Notes
 
-- The seed script creates starter content, placeholder leadership, ministries, sermons, and the first admin user.
-- The visual structure intentionally follows the KUSDA site order while using distinct typography, spacing, and art direction.
