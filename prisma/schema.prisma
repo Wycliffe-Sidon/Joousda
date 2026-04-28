@@ -3,12 +3,14 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"  // Change from "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-model User {  // Example for NextAuth
-  id    String @id @default(cuid())
-  email String @unique
-  // Add your fields
+model User {
+  id       String @id @default(cuid())
+  email    String @unique
+  password String            // add a password field for authentication
+  name     String?           // optional name field
+  createdAt DateTime @default(now())
 }
