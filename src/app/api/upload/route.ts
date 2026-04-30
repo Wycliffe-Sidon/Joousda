@@ -13,10 +13,12 @@ export async function POST(request: Request) {
 
   const { searchParams } = new URL(request.url);
 
-  // ✅ Safe folder handling: only allow letters, numbers, dash, underscore
+  // ✅ Safe folder handling
   let folder = searchParams.get("folder") ?? "general";
   folder = folder.replace(/[^a-zA-Z0-9_-]/g, "");
-  if (!folder || folder.length === 0) {
+
+  // Reject invalid folder names
+  if (!folder || folder.length === 0 || folder.includes("postgresql") || folder.includes("://")) {
     return NextResponse.json({ error: "Invalid folder name" }, { status: 400 });
   }
 
