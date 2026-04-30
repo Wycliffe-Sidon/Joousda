@@ -1,4 +1,5 @@
 export const runtime = "nodejs";
+
 import fs from "fs/promises";
 import path from "path";
 import { NextResponse } from "next/server";
@@ -11,7 +12,14 @@ export async function POST(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
-  const folder = searchParams.get("folder") ?? "general";
+
+  // ✅ Safe folder handling: only allow letters, numbers, dash, underscore
+  let folder = searchParams.get("folder") ?? "general";
+  folder = folder.replace(/[^a-zA-Z0-9_-]/g, "");
+  if (!folder || folder.length === 0) {
+    return NextResponse.json({ error: "Invalid folder name" }, { status: 400 });
+  }
+
   const formData = await request.formData();
   const file = formData.get("file");
 
@@ -20,8 +28,12 @@ export async function POST(request: Request) {
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
+
+  // ✅ Sanitize file name
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const fileName = `${Date.now()}-${safeName}`;
+
+  // ✅ Build safe paths
   const relativeDir = path.join("public", "uploads", folder);
   const absoluteDir = path.join(process.cwd(), relativeDir);
   const absolutePath = path.join(absoluteDir, fileName);
