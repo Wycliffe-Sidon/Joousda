@@ -6,6 +6,7 @@ import * as schema from "./schema.ts";
 
 const defaultDatabasePath = "./data/joousda.db";
 const configuredDatabaseUrl = process.env.DATABASE_URL?.trim();
+const isVercelRuntime = process.env.VERCEL === "1";
 
 function resolveDatabaseUrl() {
   if (!configuredDatabaseUrl) {
@@ -30,11 +31,20 @@ function resolveDatabaseUrl() {
 }
 
 function createFileUrl(databasePath: string) {
-  const resolvedPath = path.resolve(process.cwd(), databasePath);
+  const resolvedPath = resolveWritableDatabasePath(databasePath);
   fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
 
   const normalizedPath = resolvedPath.replace(/\\/g, "/");
   return `file:///${normalizedPath.replace(/^([A-Za-z]:)/, "$1")}`;
+}
+
+function resolveWritableDatabasePath(databasePath: string) {
+  if (!isVercelRuntime) {
+    return path.resolve(process.cwd(), databasePath);
+  }
+
+  const fileName = path.basename(databasePath) || "joousda.db";
+  return path.join("/tmp", fileName);
 }
 
 export const sqlite = createClient({
