@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { count } from "drizzle-orm";
-import { db, sqlite } from "./index.ts";
+import { db } from "./index.ts";
 import {
   admins,
   departments,
@@ -29,7 +29,7 @@ function createTables() {
   return Promise.all(
     [
       `CREATE TABLE IF NOT EXISTS admins (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         email TEXT NOT NULL UNIQUE,
         password_hash TEXT NOT NULL,
         name TEXT NOT NULL,
@@ -37,7 +37,7 @@ function createTables() {
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )`,
       `CREATE TABLE IF NOT EXISTS site_content (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         key TEXT NOT NULL UNIQUE,
         title TEXT NOT NULL,
         subtitle TEXT,
@@ -51,7 +51,7 @@ function createTables() {
         updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )`,
       `CREATE TABLE IF NOT EXISTS service_times (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         day TEXT NOT NULL,
         start_time TEXT NOT NULL,
@@ -60,7 +60,7 @@ function createTables() {
         display_order INTEGER NOT NULL DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS events (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         slug TEXT NOT NULL UNIQUE,
         summary TEXT NOT NULL,
@@ -70,26 +70,26 @@ function createTables() {
         start_date TEXT NOT NULL,
         end_date TEXT,
         category TEXT NOT NULL DEFAULT 'Event',
-        featured INTEGER NOT NULL DEFAULT 0,
-        published INTEGER NOT NULL DEFAULT 1,
+        featured BOOLEAN NOT NULL DEFAULT FALSE,
+        published BOOLEAN NOT NULL DEFAULT TRUE,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )`,
       `CREATE TABLE IF NOT EXISTS departments (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         image_url TEXT,
         cta_label TEXT DEFAULT 'Explore Ministry'
       )`,
       `CREATE TABLE IF NOT EXISTS music_groups (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
         image_url TEXT,
         member_count INTEGER NOT NULL DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS leadership (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         role TEXT NOT NULL,
         "group" TEXT NOT NULL,
@@ -100,7 +100,7 @@ function createTables() {
         display_order INTEGER NOT NULL DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS sermons (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         preacher TEXT NOT NULL,
         preached_at TEXT NOT NULL,
@@ -108,17 +108,17 @@ function createTables() {
         video_url TEXT NOT NULL,
         thumbnail_url TEXT,
         tags TEXT,
-        featured INTEGER NOT NULL DEFAULT 0
+        featured BOOLEAN NOT NULL DEFAULT FALSE
       )`,
       `CREATE TABLE IF NOT EXISTS resources (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT NOT NULL,
         file_url TEXT NOT NULL,
         category TEXT NOT NULL DEFAULT 'Download'
       )`,
       `CREATE TABLE IF NOT EXISTS contact_submissions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT NOT NULL,
         phone TEXT,
@@ -127,15 +127,15 @@ function createTables() {
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )`,
       `CREATE TABLE IF NOT EXISTS prayer_requests (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT,
         phone TEXT,
         request TEXT NOT NULL,
-        is_confidential INTEGER NOT NULL DEFAULT 0,
+        is_confidential BOOLEAN NOT NULL DEFAULT FALSE,
         created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
       )`,
-    ].map((statement) => sqlite.execute(statement)),
+    ].map((statement) => db.execute(statement)),
   );
 }
 

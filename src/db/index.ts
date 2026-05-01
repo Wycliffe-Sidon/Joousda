@@ -1,54 +1,26 @@
-import fs from "fs";
-import path from "path";
-import { createClient } from "@libsql/client";
-import { drizzle } from "drizzle-orm/libsql";
-import * as schema from "./schema.ts";
+import { Pool } from "pg";
+import { drizzle } from "drizzle-orm/node-postgres";
+import * as schema from "./schema";
 
-const defaultDatabasePath = "./data/joousda.db";
-const configuredDatabaseUrl = process.env.DATABASE_URL?.trim();
-const isVercelRuntime = process.env.VERCEL === "1";
+const connectionString = process.env.DATABASE_URL?.trim();
 
-function resolveDatabaseUrl() {
-  if (!configuredDatabaseUrl) {
-    return createFileUrl(defaultDatabasePath);
-  }
-
-  const lowerCasedUrl = configuredDatabaseUrl.toLowerCase();
-  if (lowerCasedUrl.startsWith("file:") || lowerCasedUrl.startsWith("libsql:")) {
-    return configuredDatabaseUrl;
-  }
-
-  if (lowerCasedUrl.includes("://")) {
-    if (lowerCasedUrl.startsWith("postgresql://") || lowerCasedUrl.startsWith("postgres://")) {
-      console.warn("DATABASE_URL uses PostgreSQL, but this app runtime expects SQLite/libSQL. Falling back to local SQLite.");
-      return createFileUrl(defaultDatabasePath);
-    }
-
-    return configuredDatabaseUrl;
-  }
-
-  return createFileUrl(configuredDatabaseUrl);
+if (!connectionString) {
+  throw new Error("DATABASE_URL is required for the production database connection.");
 }
 
-function createFileUrl(databasePath: string) {
-  const resolvedPath = resolveWritableDatabasePath(databasePath);
-  fs.mkdirSync(path.dirname(resolvedPath), { recursive: true });
+const globalForDatabase = globalThis as typeof globalThis & {
+  joousdaPool?: InstanceType<typeof Pool>;
+};
 
-  const normalizedPath = resolvedPath.replace(/\\/g, "/");
-  return `file:///${normalizedPath.replace(/^([A-Za-z]:)/, "$1")}`;
+const pool =
+  globalForDatabase.joousdaPool ??
+  new Pool({
+    connectionString,
+    ssl: connectionString.includes("localhost") ? false : { rejectUnauthorized: false },
+  });
+
+if (process.env.NODE_ENV !== "production") {
+  globalForDatabase.joousdaPool = pool;
 }
 
-function resolveWritableDatabasePath(databasePath: string) {
-  if (!isVercelRuntime) {
-    return path.resolve(process.cwd(), databasePath);
-  }
-
-  const fileName = path.basename(databasePath) || "joousda.db";
-  return path.join("/tmp", fileName);
-}
-
-export const sqlite = createClient({
-  url: resolveDatabaseUrl(),
-});
-
-export const db = drizzle(sqlite, { schema });
+export const db = drizzle(pool, { schema });

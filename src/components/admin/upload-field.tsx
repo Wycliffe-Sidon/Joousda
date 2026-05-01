@@ -33,6 +33,10 @@ export function UploadField({
       });
 
       const payload = await response.json();
+      if (!response.ok) {
+        throw new Error(payload.error ?? "Upload failed");
+      }
+
       if (payload.url) {
         setValue(payload.url);
       }
@@ -40,6 +44,8 @@ export function UploadField({
       setLoading(false);
     }
   }
+
+  const isPdf = value.endsWith(".pdf") || value.startsWith("data:application/pdf");
 
   return (
     <div className="space-y-3">
@@ -58,7 +64,7 @@ export function UploadField({
       />
       {loading ? <p className="text-xs text-slate-500">Uploading...</p> : null}
       {value ? (
-        value.endsWith(".pdf") ? (
+        isPdf ? (
           <a href={value} target="_blank" className="text-sm text-sky-600">
             Current file: {value}
           </a>

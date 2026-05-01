@@ -5,6 +5,9 @@ import path from "path";
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 
+const isVercelRuntime = process.env.VERCEL === "1";
+const MAX_INLINE_UPLOAD_BYTES = 4 * 1024 * 1024;
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user) {
@@ -33,6 +36,20 @@ export async function POST(request: Request) {
   const bytes = Buffer.from(await file.arrayBuffer());
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const fileName = `${Date.now()}-${safeName}`;
+
+  if (isVercelRuntime) {
+    if (bytes.byteLength > MAX_INLINE_UPLOAD_BYTES) {
+      return NextResponse.json({ error: "File is too large for serverless upload storage" }, { status: 400 });
+    }
+
+    const mimeType = file.type || "application/octet-stream";
+    const base64 = bytes.toString("base64");
+
+    return NextResponse.json({
+      url: `data:${mimeType};base64,${base64}`,
+      fileName,
+    });
+  }
 
   const uploadsRoot = path.resolve(process.cwd(), "public", "uploads");
   const absoluteDir = path.resolve(uploadsRoot, folder);

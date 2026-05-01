@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { eq } from "drizzle-orm";
-import { signIn, signOut } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 import { db } from "@/db";
 import { ensureDatabase } from "@/db/init";
 import {
@@ -35,6 +35,13 @@ function maybeNumber(formData: FormData, key: string) {
   return value ? Number(value) : undefined;
 }
 
+async function ensureAdminSession() {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+}
+
 export async function loginAction(formData: FormData) {
   await signIn("credentials", {
     email: textValue(formData, "email"),
@@ -48,6 +55,7 @@ export async function logoutAction() {
 }
 
 export async function saveContentBlock(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
 
   const data = contentSchema.parse({
@@ -81,6 +89,7 @@ export async function saveContentBlock(formData: FormData) {
 }
 
 export async function saveServiceTime(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = serviceTimeSchema.parse({
@@ -104,6 +113,7 @@ export async function saveServiceTime(formData: FormData) {
 }
 
 export async function deleteServiceTime(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(serviceTimes).where(eq(serviceTimes.id, id));
@@ -112,6 +122,7 @@ export async function deleteServiceTime(formData: FormData) {
 }
 
 export async function saveEvent(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = eventSchema.parse({
@@ -141,6 +152,7 @@ export async function saveEvent(formData: FormData) {
 }
 
 export async function deleteEvent(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(events).where(eq(events.id, id));
@@ -150,6 +162,7 @@ export async function deleteEvent(formData: FormData) {
 }
 
 export async function saveDepartment(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = departmentSchema.parse({
@@ -171,6 +184,7 @@ export async function saveDepartment(formData: FormData) {
 }
 
 export async function deleteDepartment(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(departments).where(eq(departments.id, id));
@@ -179,6 +193,7 @@ export async function deleteDepartment(formData: FormData) {
 }
 
 export async function saveMusicGroup(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = musicGroupSchema.parse({
@@ -200,6 +215,7 @@ export async function saveMusicGroup(formData: FormData) {
 }
 
 export async function deleteMusicGroup(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(musicGroups).where(eq(musicGroups.id, id));
@@ -208,6 +224,7 @@ export async function deleteMusicGroup(formData: FormData) {
 }
 
 export async function saveLeader(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = leadershipSchema.parse({
@@ -234,6 +251,7 @@ export async function saveLeader(formData: FormData) {
 }
 
 export async function deleteLeader(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(leadership).where(eq(leadership.id, id));
@@ -242,6 +260,7 @@ export async function deleteLeader(formData: FormData) {
 }
 
 export async function saveSermon(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = sermonSchema.parse({
@@ -268,6 +287,7 @@ export async function saveSermon(formData: FormData) {
 }
 
 export async function deleteSermon(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(sermons).where(eq(sermons.id, id));
@@ -277,6 +297,7 @@ export async function deleteSermon(formData: FormData) {
 }
 
 export async function saveResource(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = maybeNumber(formData, "id");
   const data = resourceSchema.parse({
@@ -298,6 +319,7 @@ export async function saveResource(formData: FormData) {
 }
 
 export async function deleteResource(formData: FormData) {
+  await ensureAdminSession();
   await ensureDatabase();
   const id = Number(formData.get("id"));
   await db.delete(resources).where(eq(resources.id, id));
