@@ -12,13 +12,14 @@ export async function POST(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
+  const rawFolder = (searchParams.get("folder") ?? "general").trim();
 
-  // ✅ Safe folder handling
-  let folder = searchParams.get("folder") ?? "general";
-  folder = folder.replace(/[^a-zA-Z0-9_-]/g, "");
+  if (!rawFolder || rawFolder.includes("postgresql") || rawFolder.includes("://")) {
+    return NextResponse.json({ error: "Invalid folder name" }, { status: 400 });
+  }
 
-  // Reject invalid folder names
-  if (!folder || folder.length === 0 || folder.includes("postgresql") || folder.includes("://")) {
+  const folder = rawFolder.replace(/[^a-zA-Z0-9_-]/g, "");
+  if (!folder) {
     return NextResponse.json({ error: "Invalid folder name" }, { status: 400 });
   }
 
@@ -30,14 +31,16 @@ export async function POST(request: Request) {
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
-
-  // ✅ Sanitize file name
   const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
   const fileName = `${Date.now()}-${safeName}`;
 
-  // ✅ Build safe paths
-  const relativeDir = path.join("public", "uploads", folder);
-  const absoluteDir = path.join(process.cwd(), relativeDir);
+  const uploadsRoot = path.resolve(process.cwd(), "public", "uploads");
+  const absoluteDir = path.resolve(uploadsRoot, folder);
+
+  if (path.relative(uploadsRoot, absoluteDir).startsWith("..")) {
+    return NextResponse.json({ error: "Invalid folder name" }, { status: 400 });
+  }
+
   const absolutePath = path.join(absoluteDir, fileName);
 
   await fs.mkdir(absoluteDir, { recursive: true });
