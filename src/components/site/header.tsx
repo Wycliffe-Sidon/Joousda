@@ -62,8 +62,14 @@ export function Header() {
     <header className="sticky top-0 z-50 border-b border-[#d6dfed] bg-[rgba(255,253,248,0.94)] shadow-[0_18px_40px_-32px_rgba(12,43,87,0.95)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/88">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3" onClick={closeMenus}>
-          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-[#d5c191]/60 bg-white shadow-sm">
-            <Image src={logoUrl} alt="Seventh-day Adventist Church logo" fill sizes="48px" className="object-cover" />
+          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-[#d5c191]/60 bg-white p-1 shadow-sm">
+            <Image
+              src={logoUrl}
+              alt="Seventh-day Adventist Church logo"
+              fill
+              sizes="56px"
+              className="object-contain p-1"
+            />
           </div>
           <div className="flex flex-col">
             <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#123c74]">JOOUSDA</span>
