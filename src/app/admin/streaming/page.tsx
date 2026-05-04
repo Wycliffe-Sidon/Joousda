@@ -28,6 +28,7 @@ export default async function AdminStreamingPage() {
     status?: string;
     youtubeUrl?: string;
     embedCode?: string;
+    streamUrl?: string;
   };
 
   return (
@@ -52,10 +53,22 @@ export default async function AdminStreamingPage() {
               <option value="Live Now">Live Now</option>
             </select>
             <input name="youtubeUrl" defaultValue={liveMeta.youtubeUrl ?? liveStream?.ctaHref ?? ""} placeholder="YouTube live link" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
-            <textarea name="embedCode" defaultValue={liveMeta.embedCode ?? ""} rows={5} placeholder="Embed URL or embed code" className="w-full rounded-[1.5rem] border border-slate-200 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+            <textarea name="embedCode" defaultValue={liveMeta.embedCode ?? ""} rows={4} placeholder="Embed URL or full iframe code" className="w-full rounded-[1.5rem] border border-slate-200 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+            <div className="rounded-[1.5rem] border border-slate-200 p-4 dark:border-slate-700">
+              <UploadField
+                name="streamUrl"
+                label="Upload MP4 stream backup"
+                folder="videos"
+                accept="video/mp4,video/webm,video/ogg"
+                defaultValue={liveMeta.streamUrl}
+              />
+            </div>
+            <p className="text-xs leading-6 text-slate-500 dark:text-slate-400">
+              Add a YouTube link, an embed source, or upload an MP4 backup. The website will automatically choose the best player for each browser.
+            </p>
             <div className="grid gap-4 md:grid-cols-2">
               <input name="ctaLabel" defaultValue={liveStream?.ctaLabel ?? "Watch Live"} placeholder="Button label" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
-              <input name="ctaHref" defaultValue={liveStream?.ctaHref ?? ""} placeholder="Button link" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+              <input name="ctaHref" defaultValue={liveStream?.ctaHref ?? liveMeta.streamUrl ?? liveMeta.youtubeUrl ?? ""} placeholder="Button link" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
             </div>
           </div>
         </div>

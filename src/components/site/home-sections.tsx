@@ -5,6 +5,7 @@ import ReactMarkdown from "react-markdown";
 import type { getHomePageData } from "@/lib/site";
 import { formatDisplayDate, parseLines } from "@/lib/utils";
 import { GalleryLightbox } from "./gallery-lightbox";
+import { MediaEmbed } from "./media-embed";
 import { SectionHeading } from "./section-heading";
 
 type HomeData = Awaited<ReturnType<typeof getHomePageData>>;
@@ -44,6 +45,7 @@ export function HomeSections({ data }: { data: HomeData }) {
     status?: string;
     youtubeUrl?: string;
     embedCode?: string;
+    streamUrl?: string;
   };
   const settingsByKey = new Map(data.homepageSections.map((item) => [item.key, item]));
   const enabledSectionKeys =
@@ -235,14 +237,14 @@ export function HomeSections({ data }: { data: HomeData }) {
                 {data.content["live-stream"]?.title ?? "Join our live worship experience"}
               </h2>
               <div className="mt-5 inline-flex w-fit rounded-full bg-[#eaf1ff] px-4 py-2 text-sm font-semibold text-[#123c74] dark:bg-[#123c74]/20 dark:text-[#f2ddab]">
-                {liveStreamMeta.status ?? "Upcoming"} • {liveStreamMeta.eventDate ?? "Sabbath worship"}
+                {liveStreamMeta.status ?? "Upcoming"} - {liveStreamMeta.eventDate ?? "Sabbath worship"}
               </div>
               <p className="mt-5 text-base leading-8 text-slate-600 dark:text-slate-300">
                 {data.content["live-stream"]?.body}
               </p>
               <div className="mt-8 flex flex-wrap gap-4">
                 <Link
-                  href={data.content["live-stream"]?.ctaHref ?? liveStreamMeta.youtubeUrl ?? "#"}
+                  href={data.content["live-stream"]?.ctaHref ?? liveStreamMeta.streamUrl ?? liveStreamMeta.youtubeUrl ?? "#"}
                   className="rounded-full bg-[#123c74] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0c2b57]"
                 >
                   {data.content["live-stream"]?.ctaLabel ?? "Watch Live"}
@@ -256,16 +258,10 @@ export function HomeSections({ data }: { data: HomeData }) {
               </div>
             </div>
             <div className="overflow-hidden rounded-[1.75rem] border border-[#dce4f2] bg-[#0d2344] p-3 shadow-[0_24px_55px_-35px_rgba(12,43,87,0.72)]">
-              <div className="aspect-video overflow-hidden rounded-[1.25rem] bg-slate-950">
-                <iframe
-                  src={liveStreamMeta.embedCode ?? "https://www.youtube.com/embed/4O7GQ7K2C9M"}
-                  title={data.content["live-stream"]?.title ?? "JOOUSDA live stream"}
-                  className="h-full w-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  allowFullScreen
-                />
-              </div>
+              <MediaEmbed
+                source={liveStreamMeta.streamUrl ?? liveStreamMeta.embedCode ?? liveStreamMeta.youtubeUrl}
+                title={data.content["live-stream"]?.title ?? "JOOUSDA live stream"}
+              />
             </div>
           </div>
         </div>

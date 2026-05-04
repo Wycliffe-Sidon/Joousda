@@ -169,6 +169,7 @@ export async function saveLiveStream(formData: FormData) {
     status: textValue(formData, "status"),
     youtubeUrl: textValue(formData, "youtubeUrl"),
     embedCode: textValue(formData, "embedCode"),
+    streamUrl: textValue(formData, "streamUrl"),
     ctaLabel: textValue(formData, "ctaLabel"),
     ctaHref: textValue(formData, "ctaHref"),
   });
@@ -185,6 +186,7 @@ export async function saveLiveStream(formData: FormData) {
       status: data.status,
       youtubeUrl: data.youtubeUrl,
       embedCode: data.embedCode,
+      streamUrl: data.streamUrl,
     }),
   });
 

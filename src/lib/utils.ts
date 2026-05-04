@@ -27,13 +27,54 @@ export function parseLines(value?: string | null) {
 }
 
 export function getYouTubeEmbedUrl(input: string) {
+  if (!input) {
+    return "";
+  }
+
   if (input.includes("youtube.com/embed/")) {
     return input;
   }
 
   const watchMatch = input.match(/[?&]v=([^&]+)/);
   const shortMatch = input.match(/youtu\.be\/([^?&]+)/);
-  const id = watchMatch?.[1] ?? shortMatch?.[1];
+  const shortsMatch = input.match(/youtube\.com\/shorts\/([^?&/]+)/);
+  const liveMatch = input.match(/youtube\.com\/live\/([^?&/]+)/);
+  const id = watchMatch?.[1] ?? shortMatch?.[1] ?? shortsMatch?.[1] ?? liveMatch?.[1];
 
   return id ? `https://www.youtube.com/embed/${id}` : input;
+}
+
+export function extractMediaSource(input?: string | null) {
+  const value = input?.trim() ?? "";
+
+  if (!value) {
+    return "";
+  }
+
+  const iframeSource = value.match(/src=["']([^"']+)["']/i)?.[1];
+  return iframeSource?.trim() ?? value;
+}
+
+export function isYouTubeUrl(input?: string | null) {
+  const value = extractMediaSource(input);
+  return /youtube\.com|youtu\.be/i.test(value);
+}
+
+export function isVideoFileUrl(input?: string | null) {
+  const value = extractMediaSource(input);
+  return /(\.mp4|\.webm|\.ogg)(\?.*)?$/i.test(value) || value.startsWith("data:video/");
+}
+
+export function getMediaEmbedUrl(input?: string | null) {
+  const value = extractMediaSource(input);
+
+  if (!value) {
+    return "";
+  }
+
+  if (isYouTubeUrl(value)) {
+    return getYouTubeEmbedUrl(value);
+  }
+
+  return value;
 }

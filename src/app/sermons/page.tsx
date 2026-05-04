@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { MediaEmbed } from "@/components/site/media-embed";
 import { PageHero } from "@/components/site/page-hero";
 import { getSermons } from "@/lib/site";
-import { formatDisplayDate, getYouTubeEmbedUrl } from "@/lib/utils";
+import { formatDisplayDate } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Sermons",
@@ -32,7 +33,7 @@ export default async function SermonsPage({
               id="q"
               name="q"
               defaultValue={params.q ?? ""}
-              className="h-12 flex-1 rounded-full border border-slate-200 bg-white px-5 text-sm outline-none transition focus:border-sky-500 dark:border-slate-700 dark:bg-slate-900"
+              className="h-12 flex-1 rounded-full border border-slate-200 bg-white px-5 text-sm text-slate-900 outline-none transition focus:border-sky-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               placeholder="Faith, Pastor David, Mission..."
             />
             <button className="rounded-full bg-sky-600 px-6 text-sm font-semibold text-white">Search</button>
@@ -49,7 +50,7 @@ export default async function SermonsPage({
                 <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-600">Sermon Archive</p>
                 <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-white">{sermon.title}</h2>
                 <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-                  {sermon.preacher} • {formatDisplayDate(sermon.preachedAt)}
+                  {sermon.preacher} - {formatDisplayDate(sermon.preachedAt)}
                 </p>
                 <p className="mt-5 text-sm leading-7 text-slate-600 dark:text-slate-400">{sermon.summary}</p>
                 <div className="mt-6 flex flex-wrap gap-2">
@@ -63,15 +64,7 @@ export default async function SermonsPage({
                   ))}
                 </div>
               </div>
-              <div className="aspect-video overflow-hidden rounded-[1.5rem] bg-slate-100 dark:bg-slate-900">
-                <iframe
-                  className="h-full w-full"
-                  src={getYouTubeEmbedUrl(sermon.videoUrl)}
-                  title={sermon.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              </div>
+              <MediaEmbed source={sermon.videoUrl} title={sermon.title} className="rounded-[1.5rem]" />
             </article>
           ))}
         </div>

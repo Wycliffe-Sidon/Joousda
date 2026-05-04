@@ -129,10 +129,14 @@ export const liveStreamSchema = z.object({
   body: z.string().min(10),
   eventDate: z.string().min(2),
   status: z.enum(["Live Now", "Upcoming"]),
-  youtubeUrl: z.string().min(6),
-  embedCode: z.string().min(6),
+  youtubeUrl: z.string().optional(),
+  embedCode: z.string().optional(),
+  streamUrl: z.string().optional(),
   ctaLabel: z.string().min(2),
   ctaHref: z.string().min(4),
+}).refine((value) => Boolean(value.streamUrl || value.embedCode || value.youtubeUrl), {
+  message: "Provide a YouTube link, embed source, or uploaded video URL.",
+  path: ["streamUrl"],
 });
 
 export const contactSchema = z.object({

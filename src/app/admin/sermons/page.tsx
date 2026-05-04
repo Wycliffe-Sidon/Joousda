@@ -17,13 +17,21 @@ export default async function AdminSermonsPage() {
               <input name="title" defaultValue={item.title} className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
               <input name="preacher" defaultValue={item.preacher} className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
               <input name="preachedAt" type="date" defaultValue={item.preachedAt} className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
-              <input name="videoUrl" defaultValue={item.videoUrl} className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
-              <input name="tags" defaultValue={item.tags ?? ""} className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
-              <textarea name="summary" defaultValue={item.summary ?? ""} rows={5} className="w-full rounded-[1.5rem] border border-slate-200 px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-950" />
+              <input
+                name="videoUrl"
+                defaultValue={item.videoUrl}
+                placeholder="YouTube link or MP4 file URL"
+                className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white"
+              />
+              <input name="tags" defaultValue={item.tags ?? ""} className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+              <textarea name="summary" defaultValue={item.summary ?? ""} rows={5} className="w-full rounded-[1.5rem] border border-slate-200 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
               <label className="flex items-center gap-3 text-sm">
                 <input name="featured" type="checkbox" defaultChecked={item.featured ?? false} />
                 Feature on homepage
               </label>
+              <p className="text-xs leading-6 text-slate-500 dark:text-slate-400">
+                You can paste a YouTube watch link, an embed link, or a direct MP4 URL for recorded sermons.
+              </p>
             </div>
             <UploadField name="thumbnailUrl" label="Thumbnail image" folder="images" accept="image/*" defaultValue={item.thumbnailUrl} />
           </div>
@@ -43,13 +51,16 @@ export default async function AdminSermonsPage() {
             <input name="title" placeholder="Title" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
             <input name="preacher" placeholder="Preacher" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
             <input name="preachedAt" type="date" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
-            <input name="videoUrl" placeholder="YouTube URL" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
-            <input name="tags" placeholder="Faith, Mission, Youth" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm dark:border-slate-700 dark:bg-slate-950" />
-            <textarea name="summary" rows={5} placeholder="Summary" className="w-full rounded-[1.5rem] border border-slate-200 px-4 py-3 text-sm dark:border-slate-700 dark:bg-slate-950" />
+            <input name="videoUrl" placeholder="YouTube link or MP4 file URL" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+            <input name="tags" placeholder="Faith, Mission, Youth" className="h-12 w-full rounded-2xl border border-slate-200 px-4 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
+            <textarea name="summary" rows={5} placeholder="Summary" className="w-full rounded-[1.5rem] border border-slate-200 px-4 py-3 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-white" />
             <label className="flex items-center gap-3 text-sm">
               <input name="featured" type="checkbox" />
               Feature on homepage
             </label>
+            <p className="text-xs leading-6 text-slate-500 dark:text-slate-400">
+              Recorded sermons can now use YouTube or self-hosted MP4 playback.
+            </p>
           </div>
           <UploadField name="thumbnailUrl" label="Thumbnail image" folder="images" accept="image/*" />
         </div>

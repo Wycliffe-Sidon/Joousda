@@ -57,6 +57,11 @@ export function UploadField({
   }
 
   const isPdf = value.endsWith(".pdf") || value.startsWith("data:application/pdf");
+  const isVideo =
+    value.endsWith(".mp4") ||
+    value.endsWith(".webm") ||
+    value.endsWith(".ogg") ||
+    value.startsWith("data:video/");
 
   return (
     <div className="space-y-3">
@@ -81,6 +86,11 @@ export function UploadField({
           <a href={value} target="_blank" rel="noreferrer" className="text-sm text-sky-600">
             Current file: {value}
           </a>
+        ) : isVideo ? (
+          <video className="h-32 w-56 rounded-2xl bg-slate-950" controls preload="metadata">
+            <source src={value} />
+            Your browser does not support video playback.
+          </video>
         ) : (
           <div className="relative h-32 w-48 overflow-hidden rounded-2xl">
             <Image src={value} alt="Upload preview" fill className="object-cover" />
