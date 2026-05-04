@@ -10,29 +10,55 @@ type HomeData = Awaited<ReturnType<typeof getHomePageData>>;
 export function HomeSections({ data }: { data: HomeData }) {
   const heroMeta = safeParseJson(data.content.hero?.metadata) as { eyebrow?: string };
   const missionMeta = safeParseJson(data.content.mission?.metadata) as { objectives?: string[] };
+  const galleryCards = [
+    {
+      title: data.content.hero.title,
+      caption: "Welcome to worship and community",
+      imageUrl: data.content.hero.imageUrl,
+      href: "#hero",
+    },
+    ...data.departments.slice(0, 4).map((department) => ({
+      title: department.name,
+      caption: "Explore ministry life",
+      imageUrl: department.imageUrl,
+      href: "#departments",
+    })),
+    ...data.musicGroups.slice(0, 3).map((group) => ({
+      title: group.name,
+      caption: "Voices of praise and worship",
+      imageUrl: group.imageUrl,
+      href: "#music-choirs",
+    })),
+    {
+      title: data.content["chaplain-message"].title,
+      caption: "Pastoral care and spiritual support",
+      imageUrl: data.content["chaplain-message"].imageUrl,
+      href: "#chaplain-message",
+    },
+  ].filter((card) => card.imageUrl);
 
   return (
     <>
-      <section className="relative isolate overflow-hidden bg-slate-950">
+      <section id="hero" className="relative isolate overflow-hidden bg-slate-950">
         <div className="absolute inset-0">
           <Image
             src={data.content.hero.imageUrl ?? ""}
             alt={data.content.hero.title}
             fill
             priority
-            className="object-cover opacity-30"
+            className="object-cover opacity-40 transition-transform duration-[1600ms] hover:scale-105"
           />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.42),_transparent_35%),linear-gradient(135deg,rgba(2,6,23,0.95),rgba(12,74,110,0.7))]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(205,168,90,0.22),_transparent_28%),linear-gradient(135deg,rgba(7,23,47,0.96),rgba(18,60,116,0.78))]" />
         </div>
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-32">
           <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-sky-200">
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#f2ddab]">
               {heroMeta.eyebrow}
             </p>
-            <h1 className="mt-5 text-5xl font-semibold tracking-tight text-white sm:text-6xl">
+            <h1 className="mt-5 font-serif text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
               {data.content.hero.title}
             </h1>
-            <p className="mt-4 text-xl font-medium text-sky-100">
+            <p className="mt-4 text-xl font-medium text-[#d9e7ff]">
               {data.content.hero.subtitle}
             </p>
             <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
@@ -41,33 +67,36 @@ export function HomeSections({ data }: { data: HomeData }) {
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href={data.content.hero.ctaHref ?? "/about"}
-                className="rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-900 transition hover:bg-sky-100"
+                className="rounded-full bg-[#f8f1df] px-6 py-3 text-sm font-semibold text-[#123c74] shadow-[0_16px_40px_-22px_rgba(205,168,90,0.85)] transition hover:-translate-y-0.5 hover:bg-white"
               >
                 {data.content.hero.ctaLabel}
               </Link>
               <Link
                 href={data.content.hero.secondaryCtaHref ?? "/contact"}
-                className="rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+                className="rounded-full border border-white/25 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/10"
               >
                 {data.content.hero.secondaryCtaLabel}
               </Link>
             </div>
           </div>
 
-          <div className="grid gap-5 rounded-[2rem] border border-white/10 bg-white/10 p-6 backdrop-blur">
-            <div className="rounded-3xl bg-white p-5 text-slate-900">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-600">
+          <div className="section-shell grid gap-5 rounded-[2rem] border border-white/10 bg-white/10 p-6 backdrop-blur">
+            <div className="rounded-3xl bg-white p-5 text-slate-900 shadow-[0_24px_50px_-35px_rgba(12,43,87,0.55)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#123c74]">
                 Join Our Community
               </p>
-              <h2 className="mt-3 text-2xl font-semibold">Worship With Us Every Sabbath</h2>
+              <h2 className="mt-3 font-serif text-2xl font-semibold">Worship With Us Every Sabbath</h2>
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Sabbath School at 8:00 AM, Divine Service at 10:50 AM, and student discipleship throughout the day.
               </p>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
               {data.weeklyEvents.slice(0, 2).map((event) => (
-                <div key={event.id} className="rounded-3xl border border-white/15 bg-slate-900/50 p-5 text-white">
-                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-200">
+                <div
+                  key={event.id}
+                  className="rounded-3xl border border-white/15 bg-slate-900/55 p-5 text-white shadow-[0_24px_50px_-35px_rgba(15,23,42,0.9)] transition duration-300 hover:-translate-y-1 hover:bg-slate-900/75"
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f2ddab]">
                     {event.category}
                   </p>
                   <h3 className="mt-2 text-lg font-semibold">{event.title}</h3>
@@ -80,6 +109,42 @@ export function HomeSections({ data }: { data: HomeData }) {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <div className="section-shell overflow-hidden rounded-[2rem] border border-[#d9e3f2] bg-white p-6 shadow-[0_30px_70px_-45px_rgba(12,43,87,0.55)] sm:p-8">
+          <SectionHeading
+            eyebrow="Gallery Highlights"
+            title="Our church in pictures"
+            description="A quick visual walk through worship, music, ministry, and pastoral care across the JOOUSDA family."
+          />
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            {galleryCards.map((card) => (
+              <Link
+                key={`${card.title}-${card.href}`}
+                href={card.href}
+                className="group relative block overflow-hidden rounded-[1.5rem] bg-slate-950"
+              >
+                <div className="relative h-56">
+                  <Image
+                    src={card.imageUrl ?? ""}
+                    alt={card.title}
+                    fill
+                    className="object-cover transition duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(7,23,47,0.88)] via-[rgba(18,60,116,0.15)] to-transparent" />
+                </div>
+                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f2ddab]">{card.caption}</p>
+                  <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight">{card.title}</h3>
+                  <p className="mt-3 text-sm font-medium text-white/80 transition group-hover:text-white">
+                    View section
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="this-week" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="This Week at JOOUSDA"
           title="Upcoming gatherings, emphasis Sabbaths, and mission moments"
@@ -89,10 +154,10 @@ export function HomeSections({ data }: { data: HomeData }) {
           {data.weeklyEvents.map((event) => (
             <article
               key={event.id}
-              className="rounded-[1.75rem] border border-slate-200 bg-white p-6 shadow-[0_20px_50px_-35px_rgba(15,23,42,0.35)] dark:border-slate-800 dark:bg-slate-900"
+              className="rounded-[1.75rem] border border-[#dde5f1] bg-white p-6 shadow-[0_24px_55px_-38px_rgba(12,43,87,0.45)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-38px_rgba(12,43,87,0.55)] dark:border-slate-800 dark:bg-slate-900"
             >
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-sky-600">{event.category}</p>
-              <h3 className="mt-3 text-xl font-semibold text-slate-900 dark:text-white">{event.title}</h3>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#123c74]">{event.category}</p>
+              <h3 className="mt-3 font-serif text-xl font-semibold text-slate-900 dark:text-white">{event.title}</h3>
               <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
                 {formatDisplayDate(event.startDate)}
               </p>
@@ -103,7 +168,7 @@ export function HomeSections({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-20 dark:bg-slate-900/40">
+      <section id="worship-schedule" className="bg-[linear-gradient(180deg,rgba(248,241,223,0.3),rgba(255,255,255,0))] py-20 dark:bg-slate-900/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Worship With Us"
@@ -114,10 +179,10 @@ export function HomeSections({ data }: { data: HomeData }) {
             {data.serviceTimes.map((item) => (
               <div
                 key={item.id}
-                className="rounded-[1.5rem] border border-slate-200 bg-white p-5 dark:border-slate-800 dark:bg-slate-950"
+                className="rounded-[1.5rem] border border-[#dde5f1] bg-white p-5 shadow-[0_20px_40px_-35px_rgba(12,43,87,0.45)] transition duration-300 hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-950"
               >
-                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-sky-600">{item.day}</p>
-                <h3 className="mt-3 text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h3>
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#123c74]">{item.day}</p>
+                <h3 className="mt-3 font-serif text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h3>
                 <p className="mt-2 text-sm font-medium text-slate-700 dark:text-slate-300">
                   {item.startTime} - {item.endTime}
                 </p>
@@ -128,7 +193,7 @@ export function HomeSections({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      <section id="mission" className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
         <div>
           <SectionHeading
             eyebrow={data.content.mission.subtitle ?? "Our Mission"}
@@ -137,13 +202,13 @@ export function HomeSections({ data }: { data: HomeData }) {
           />
           <Link
             href="/about"
-            className="mt-8 inline-flex rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-700"
+            className="mt-8 inline-flex rounded-full bg-[#123c74] px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-[#0c2b57]"
           >
             Discover Our Story
           </Link>
         </div>
-        <div className="rounded-[2rem] bg-sky-950 p-8 text-white">
-          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-sky-200">Our Objectives</h3>
+        <div className="section-shell rounded-[2rem] bg-[#0c2b57] p-8 text-white shadow-[0_30px_70px_-45px_rgba(12,43,87,0.9)]">
+          <h3 className="text-sm font-semibold uppercase tracking-[0.28em] text-[#f2ddab]">Our Objectives</h3>
           <div className="mt-6 space-y-4">
             {missionMeta.objectives?.map((objective) => (
               <div key={objective} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4">
@@ -154,7 +219,7 @@ export function HomeSections({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-20 dark:bg-slate-900/40">
+      <section id="departments" className="bg-[linear-gradient(180deg,rgba(237,244,255,0.8),rgba(255,255,255,0.94))] py-20 dark:bg-slate-900/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Get Involved"
@@ -165,15 +230,20 @@ export function HomeSections({ data }: { data: HomeData }) {
             {data.departments.map((department) => (
               <article
                 key={department.id}
-                className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950"
+                className="overflow-hidden rounded-[1.75rem] border border-[#dbe4f2] bg-white shadow-[0_24px_60px_-42px_rgba(12,43,87,0.42)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-38px_rgba(12,43,87,0.5)] dark:border-slate-800 dark:bg-slate-950"
               >
-                <div className="relative h-56">
-                  <Image src={department.imageUrl ?? ""} alt={department.name} fill className="object-cover" />
+                <div className="relative h-56 overflow-hidden">
+                  <Image
+                    src={department.imageUrl ?? ""}
+                    alt={department.name}
+                    fill
+                    className="object-cover transition duration-500 hover:scale-105"
+                  />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{department.name}</h3>
+                  <h3 className="font-serif text-xl font-semibold text-slate-900 dark:text-white">{department.name}</h3>
                   <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{department.description}</p>
-                  <Link href="/contact" className="mt-5 inline-flex text-sm font-semibold text-sky-600">
+                  <Link href="/contact" className="mt-5 inline-flex text-sm font-semibold text-[#123c74]">
                     {department.ctaLabel ?? "Explore Ministry"}
                   </Link>
                 </div>
@@ -183,7 +253,7 @@ export function HomeSections({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      <section id="music-choirs" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Worship Through Music"
           title="Glorifying God through choirs and praise teams"
@@ -191,19 +261,27 @@ export function HomeSections({ data }: { data: HomeData }) {
         />
         <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           {data.musicGroups.map((group) => (
-            <article key={group.id} className="rounded-[1.75rem] bg-slate-950 p-5 text-white">
+            <article
+              key={group.id}
+              className="rounded-[1.75rem] bg-[#0f274a] p-5 text-white shadow-[0_28px_60px_-42px_rgba(12,43,87,0.82)] transition duration-300 hover:-translate-y-1"
+            >
               <div className="relative h-52 overflow-hidden rounded-[1.25rem]">
-                <Image src={group.imageUrl ?? ""} alt={group.name} fill className="object-cover" />
+                <Image
+                  src={group.imageUrl ?? ""}
+                  alt={group.name}
+                  fill
+                  className="object-cover transition duration-500 hover:scale-105"
+                />
               </div>
-              <h3 className="mt-5 text-xl font-semibold">{group.name}</h3>
-              <p className="mt-2 text-sm font-medium text-sky-200">{group.memberCount}+ members</p>
+              <h3 className="mt-5 font-serif text-xl font-semibold">{group.name}</h3>
+              <p className="mt-2 text-sm font-medium text-[#f2ddab]">{group.memberCount}+ members</p>
               <p className="mt-3 text-sm leading-7 text-slate-300">{group.description}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="bg-slate-950 py-20">
+      <section id="chaplain-message" className="bg-[#0b2343] py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div className="relative min-h-[360px] overflow-hidden rounded-[2rem]">
             <Image
@@ -222,7 +300,7 @@ export function HomeSections({ data }: { data: HomeData }) {
             />
             <Link
               href={data.content["chaplain-message"].ctaHref ?? "/leadership"}
-              className="mt-8 inline-flex rounded-full bg-white px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-sky-100"
+              className="mt-8 inline-flex rounded-full bg-[#f8f1df] px-6 py-3 text-sm font-semibold text-[#123c74] transition hover:-translate-y-0.5 hover:bg-white"
             >
               {data.content["chaplain-message"].ctaLabel ?? "Meet Our Chaplaincy Team"}
             </Link>
@@ -260,11 +338,11 @@ export function HomeSections({ data }: { data: HomeData }) {
           ].map((item) => (
             <article
               key={item.title}
-              className="rounded-[1.75rem] border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-950"
+              className="rounded-[1.75rem] border border-[#dde5f1] bg-white p-8 shadow-[0_24px_60px_-42px_rgba(12,43,87,0.35)] transition duration-300 hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-950"
             >
-              <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{item.title}</h3>
+              <h3 className="font-serif text-xl font-semibold text-slate-900 dark:text-white">{item.title}</h3>
               <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{item.body}</p>
-              <Link href={item.href} className="mt-6 inline-flex text-sm font-semibold text-sky-600">
+              <Link href={item.href} className="mt-6 inline-flex text-sm font-semibold text-[#123c74]">
                 {item.label}
               </Link>
             </article>
@@ -272,7 +350,7 @@ export function HomeSections({ data }: { data: HomeData }) {
         </div>
       </section>
 
-      <section className="bg-slate-50 py-20 dark:bg-slate-900/40">
+      <section className="bg-[linear-gradient(180deg,rgba(248,241,223,0.38),rgba(255,255,255,0.96))] py-20 dark:bg-slate-900/40">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Recent Messages"
@@ -283,15 +361,15 @@ export function HomeSections({ data }: { data: HomeData }) {
             {data.sermons.map((sermon) => (
               <article
                 key={sermon.id}
-                className="rounded-[1.75rem] border border-slate-200 bg-white p-6 dark:border-slate-800 dark:bg-slate-950"
+                className="rounded-[1.75rem] border border-[#dde5f1] bg-white p-6 shadow-[0_24px_55px_-40px_rgba(12,43,87,0.35)] transition duration-300 hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-950"
               >
-                <h3 className="text-xl font-semibold text-slate-900 dark:text-white">{sermon.title}</h3>
-                <p className="mt-2 text-sm font-medium text-sky-600">{sermon.preacher}</p>
+                <h3 className="font-serif text-xl font-semibold text-slate-900 dark:text-white">{sermon.title}</h3>
+                <p className="mt-2 text-sm font-medium text-[#123c74]">{sermon.preacher}</p>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   {formatDisplayDate(sermon.preachedAt)}
                 </p>
                 <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{sermon.summary}</p>
-                <Link href="/sermons" className="mt-6 inline-flex text-sm font-semibold text-sky-600">
+                <Link href="/sermons" className="mt-6 inline-flex text-sm font-semibold text-[#123c74]">
                   Watch Sermons
                 </Link>
               </article>
