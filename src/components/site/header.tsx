@@ -2,18 +2,22 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { useState } from "react";
-import { usePathname } from "next/navigation";
-import { navigation, siteConfig } from "@/lib/constants";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { navigation, siteConfig } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+
+const logoUrl =
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Logo_of_the_Seventh-day_Adventist_Church.svg/512px-Logo_of_the_Seventh-day_Adventist_Church.svg.png";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileDropdown, setMobileDropdown] = useState<string | null>(null);
   const pathname = usePathname();
+  const router = useRouter();
 
   const closeMenus = () => {
     setOpen(false);
@@ -21,49 +25,69 @@ export function Header() {
     setMobileDropdown(null);
   };
 
+  const scrollToHash = (href: string) => {
+    const hash = href.split("#")[1];
+    if (!hash) return;
+
+    const element = document.getElementById(hash);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      window.history.replaceState(null, "", `/#${hash}`);
+    }
+  };
+
+  const handleNavigation = (href: string) => {
+    closeMenus();
+
+    if (href.startsWith("/#")) {
+      if (pathname === "/") {
+        scrollToHash(href);
+        return;
+      }
+
+      router.push(href);
+      return;
+    }
+
+    router.push(href);
+  };
+
+  const renderNavLink = (key: string, href: string, label: string, className?: string) => (
+    <button key={key} type="button" onClick={() => handleNavigation(href)} className={className}>
+      {label}
+    </button>
+  );
+
   return (
     <header className="sticky top-0 z-50 border-b border-[#d6dfed] bg-[rgba(255,253,248,0.94)] shadow-[0_18px_40px_-32px_rgba(12,43,87,0.95)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/88">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3" onClick={closeMenus}>
-          <div className="relative h-12 w-12 overflow-hidden rounded-full border border-[#d5c191]/60 bg-white shadow-sm">
-            <Image
-              src="https://adventist.org/wp-content/uploads/2023/10/GC-Logo.png"
-              alt="Seventh-day Adventist Church logo"
-              fill
-              sizes="48px"
-              className="object-contain p-1.5"
-            />
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-[#d5c191]/60 bg-white shadow-sm">
+            <Image src={logoUrl} alt="Seventh-day Adventist Church logo" fill sizes="48px" className="object-cover" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#123c74]">
-              JOOUSDA
-            </span>
-            <span className="font-serif text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">
-              SDA Church
-            </span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#123c74]">JOOUSDA</span>
+            <span className="font-serif text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">SDA Church</span>
             <span className="hidden text-xs text-slate-500 lg:block">{siteConfig.location}</span>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-2 lg:flex">
+        <nav className="hidden items-center gap-1 lg:flex">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             const hasChildren = Boolean(item.children?.length);
 
             if (!hasChildren) {
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "rounded-full px-4 py-3 text-sm font-semibold transition",
-                    isActive
-                      ? "bg-[#eaf1ff] text-[#123c74]"
-                      : "text-slate-700 hover:bg-[#f5f8ff] hover:text-[#123c74] dark:text-slate-200",
-                  )}
-                >
-                  {item.label}
-                </Link>
+              return renderNavLink(
+                item.href,
+                item.href,
+                item.label,
+                cn(
+                  "rounded-full px-4 py-3 text-sm font-semibold transition",
+                  isActive
+                    ? "bg-[#eaf1ff] text-[#123c74]"
+                    : "text-slate-700 hover:bg-[#f5f8ff] hover:text-[#123c74] dark:text-slate-200",
+                ),
               );
             }
 
@@ -96,21 +120,20 @@ export function Header() {
                   )}
                 >
                   <div className="rounded-2xl bg-[#123c74] px-4 py-4 text-white">
-                    <p className="text-xs font-semibold uppercase tracking-[0.25em] opacity-80">
-                      {item.description}
-                    </p>
+                    <p className="text-xs font-semibold uppercase tracking-[0.25em] opacity-80">{item.description}</p>
                     <p className="mt-2 font-serif text-xl font-semibold">{item.label}</p>
                   </div>
                   <div className="mt-3 space-y-2">
                     {item.children?.map((child) => (
-                      <Link
+                      <button
                         key={child.href}
-                        href={child.href}
-                        className="block rounded-2xl border border-slate-200 px-4 py-3 transition hover:border-[#cfdcf3] hover:bg-[#f7faff] dark:border-slate-800 dark:hover:bg-slate-900"
+                        type="button"
+                        onClick={() => handleNavigation(child.href)}
+                        className="block w-full rounded-2xl border border-slate-200 px-4 py-3 text-left transition hover:border-[#cfdcf3] hover:bg-[#f7faff] dark:border-slate-800 dark:hover:bg-slate-900"
                       >
                         <p className="text-base font-semibold text-slate-900 dark:text-white">{child.label}</p>
                         <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{child.description}</p>
-                      </Link>
+                      </button>
                     ))}
                   </div>
                 </div>
@@ -142,15 +165,11 @@ export function Header() {
         <nav className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 sm:px-6">
           {navigation.map((item) => {
             if (!item.children?.length) {
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-2xl px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-[#f4f7ff] hover:text-[#123c74] dark:text-slate-200"
-                  onClick={closeMenus}
-                >
-                  {item.label}
-                </Link>
+              return renderNavLink(
+                item.href,
+                item.href,
+                item.label,
+                "rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-[#f4f7ff] hover:text-[#123c74] dark:text-slate-200",
               );
             }
 
@@ -173,15 +192,15 @@ export function Header() {
                     </div>
                     <div className="mt-2 space-y-2">
                       {item.children.map((child) => (
-                        <Link
+                        <button
                           key={child.href}
-                          href={child.href}
-                          className="block rounded-2xl border border-slate-200 px-4 py-3"
-                          onClick={closeMenus}
+                          type="button"
+                          onClick={() => handleNavigation(child.href)}
+                          className="block w-full rounded-2xl border border-slate-200 px-4 py-3 text-left"
                         >
                           <p className="text-sm font-semibold text-slate-900">{child.label}</p>
                           <p className="mt-1 text-xs text-slate-500">{child.description}</p>
-                        </Link>
+                        </button>
                       ))}
                     </div>
                   </div>

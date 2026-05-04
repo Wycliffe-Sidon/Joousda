@@ -1,45 +1,76 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import type { getHomePageData } from "@/lib/site";
 import { formatDisplayDate, parseLines } from "@/lib/utils";
+import { GalleryLightbox } from "./gallery-lightbox";
 import { SectionHeading } from "./section-heading";
 
 type HomeData = Awaited<ReturnType<typeof getHomePageData>>;
 
+const defaultSectionOrder = [
+  "hero",
+  "gallery",
+  "this-week",
+  "worship-schedule",
+  "mission",
+  "history",
+  "beliefs",
+  "leadership",
+  "departments",
+  "music-choirs",
+  "chaplain-message",
+  "next-steps",
+  "resources",
+  "sermons",
+] as const;
+
 export function HomeSections({ data }: { data: HomeData }) {
   const heroMeta = safeParseJson(data.content.hero?.metadata) as { eyebrow?: string };
   const missionMeta = safeParseJson(data.content.mission?.metadata) as { objectives?: string[] };
-  const galleryCards = [
-    {
-      title: data.content.hero.title,
-      caption: "Welcome to worship and community",
-      imageUrl: data.content.hero.imageUrl,
-      href: "#hero",
-    },
-    ...data.departments.slice(0, 4).map((department) => ({
-      title: department.name,
-      caption: "Explore ministry life",
-      imageUrl: department.imageUrl,
-      href: "#departments",
-    })),
-    ...data.musicGroups.slice(0, 3).map((group) => ({
-      title: group.name,
-      caption: "Voices of praise and worship",
-      imageUrl: group.imageUrl,
-      href: "#music-choirs",
-    })),
-    {
-      title: data.content["chaplain-message"].title,
-      caption: "Pastoral care and spiritual support",
-      imageUrl: data.content["chaplain-message"].imageUrl,
-      href: "#chaplain-message",
-    },
-  ].filter((card) => card.imageUrl);
+  const settingsByKey = new Map(data.homepageSections.map((item) => [item.key, item]));
+  const enabledSectionKeys =
+    data.homepageSections.filter((item) => item.enabled).map((item) => item.key) ?? Array.from(defaultSectionOrder);
 
-  return (
-    <>
-      <section id="hero" className="relative isolate overflow-hidden bg-slate-950">
+  const gallerySection = settingsByKey.get("gallery");
+  const leadershipSection = settingsByKey.get("leadership");
+  const resourcesSection = settingsByKey.get("resources");
+
+  const customSections = new Map(
+    data.homepageSections
+      .filter((item) => item.isCustom)
+      .map((item) => [
+        item.key,
+        <section key={item.key} id={item.key} className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="section-shell overflow-hidden rounded-[2rem] border border-[#dbe4f2] bg-white shadow-[0_28px_70px_-44px_rgba(12,43,87,0.38)]">
+            <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+              <div className="p-8 sm:p-10">
+                <SectionHeading eyebrow={item.subtitle ?? "Church Life"} title={item.title ?? item.key} description={item.body ?? ""} />
+                {item.ctaLabel && item.ctaHref ? (
+                  <Link
+                    href={item.ctaHref}
+                    className="mt-8 inline-flex rounded-full bg-[#123c74] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#0c2b57]"
+                  >
+                    {item.ctaLabel}
+                  </Link>
+                ) : null}
+              </div>
+              {item.imageUrl ? (
+                <div className="relative min-h-[22rem] overflow-hidden lg:min-h-full">
+                  <Image src={item.imageUrl} alt={item.title ?? item.key} fill className="object-cover" />
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </section>,
+      ]),
+  );
+
+  const coreSections = new Map<string, ReactNode>([
+    [
+      "hero",
+      <section key="hero" id="hero" className="relative isolate overflow-hidden bg-slate-950">
         <div className="absolute inset-0">
           <Image
             src={data.content.hero.imageUrl ?? ""}
@@ -52,18 +83,12 @@ export function HomeSections({ data }: { data: HomeData }) {
         </div>
         <div className="relative mx-auto grid max-w-7xl gap-10 px-4 py-24 sm:px-6 lg:grid-cols-[1.2fr_0.8fr] lg:px-8 lg:py-32">
           <div className="max-w-3xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#f2ddab]">
-              {heroMeta.eyebrow}
-            </p>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-[#f2ddab]">{heroMeta.eyebrow}</p>
             <h1 className="mt-5 font-serif text-5xl font-semibold tracking-tight text-white sm:text-6xl lg:text-7xl">
               {data.content.hero.title}
             </h1>
-            <p className="mt-4 text-xl font-medium text-[#d9e7ff]">
-              {data.content.hero.subtitle}
-            </p>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">
-              {data.content.hero.body}
-            </p>
+            <p className="mt-4 text-xl font-medium text-[#d9e7ff]">{data.content.hero.subtitle}</p>
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-200">{data.content.hero.body}</p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href={data.content.hero.ctaHref ?? "/about"}
@@ -82,9 +107,7 @@ export function HomeSections({ data }: { data: HomeData }) {
 
           <div className="section-shell grid gap-5 rounded-[2rem] border border-white/10 bg-white/10 p-6 backdrop-blur">
             <div className="rounded-3xl bg-white p-5 text-slate-900 shadow-[0_24px_50px_-35px_rgba(12,43,87,0.55)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#123c74]">
-                Join Our Community
-              </p>
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#123c74]">Join Our Community</p>
               <h2 className="mt-3 font-serif text-2xl font-semibold">Worship With Us Every Sabbath</h2>
               <p className="mt-3 text-sm leading-7 text-slate-600">
                 Sabbath School at 8:00 AM, Divine Service at 10:50 AM, and student discipleship throughout the day.
@@ -96,9 +119,7 @@ export function HomeSections({ data }: { data: HomeData }) {
                   key={event.id}
                   className="rounded-3xl border border-white/15 bg-slate-900/55 p-5 text-white shadow-[0_24px_50px_-35px_rgba(15,23,42,0.9)] transition duration-300 hover:-translate-y-1 hover:bg-slate-900/75"
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f2ddab]">
-                    {event.category}
-                  </p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#f2ddab]">{event.category}</p>
                   <h3 className="mt-2 text-lg font-semibold">{event.title}</h3>
                   <p className="mt-2 text-sm text-slate-300">{formatDisplayDate(event.startDate)}</p>
                 </div>
@@ -106,45 +127,27 @@ export function HomeSections({ data }: { data: HomeData }) {
             </div>
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      </section>,
+    ],
+    [
+      "gallery",
+      <section key="gallery" id="gallery" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="section-shell overflow-hidden rounded-[2rem] border border-[#d9e3f2] bg-white p-6 shadow-[0_30px_70px_-45px_rgba(12,43,87,0.55)] sm:p-8">
           <SectionHeading
-            eyebrow="Gallery Highlights"
-            title="Our church in pictures"
-            description="A quick visual walk through worship, music, ministry, and pastoral care across the JOOUSDA family."
+            eyebrow={gallerySection?.subtitle ?? "Church Gallery"}
+            title={gallerySection?.title ?? "Moments in Ministry"}
+            description={
+              gallerySection?.body ??
+              "A quick visual walk through worship, music, ministry, and pastoral care across the JOOUSDA family."
+            }
           />
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {galleryCards.map((card) => (
-              <Link
-                key={`${card.title}-${card.href}`}
-                href={card.href}
-                className="group relative block overflow-hidden rounded-[1.5rem] bg-slate-950"
-              >
-                <div className="relative h-56">
-                  <Image
-                    src={card.imageUrl ?? ""}
-                    alt={card.title}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[rgba(7,23,47,0.88)] via-[rgba(18,60,116,0.15)] to-transparent" />
-                </div>
-                <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#f2ddab]">{card.caption}</p>
-                  <h3 className="mt-2 font-serif text-2xl font-semibold leading-tight">{card.title}</h3>
-                  <p className="mt-3 text-sm font-medium text-white/80 transition group-hover:text-white">
-                    View section
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+          <GalleryLightbox items={data.galleryImages} />
         </div>
-      </section>
-
-      <section id="this-week" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      </section>,
+    ],
+    [
+      "this-week",
+      <section key="this-week" id="this-week" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="This Week at JOOUSDA"
           title="Upcoming gatherings, emphasis Sabbaths, and mission moments"
@@ -158,17 +161,21 @@ export function HomeSections({ data }: { data: HomeData }) {
             >
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#123c74]">{event.category}</p>
               <h3 className="mt-3 font-serif text-xl font-semibold text-slate-900 dark:text-white">{event.title}</h3>
-              <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">
-                {formatDisplayDate(event.startDate)}
-              </p>
+              <p className="mt-3 text-sm font-medium text-slate-500 dark:text-slate-400">{formatDisplayDate(event.startDate)}</p>
               <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300">{event.summary}</p>
               <p className="mt-4 text-sm font-medium text-slate-800 dark:text-slate-200">{event.location}</p>
             </article>
           ))}
         </div>
-      </section>
-
-      <section id="worship-schedule" className="bg-[linear-gradient(180deg,rgba(248,241,223,0.3),rgba(255,255,255,0))] py-20 dark:bg-slate-900/40">
+      </section>,
+    ],
+    [
+      "worship-schedule",
+      <section
+        key="worship-schedule"
+        id="worship-schedule"
+        className="bg-[linear-gradient(180deg,rgba(248,241,223,0.3),rgba(255,255,255,0))] py-20 dark:bg-slate-900/40"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Worship With Us"
@@ -191,9 +198,11 @@ export function HomeSections({ data }: { data: HomeData }) {
             ))}
           </div>
         </div>
-      </section>
-
-      <section id="mission" className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
+      </section>,
+    ],
+    [
+      "mission",
+      <section key="mission" id="mission" className="mx-auto grid max-w-7xl gap-12 px-4 py-20 sm:px-6 lg:grid-cols-[0.9fr_1.1fr] lg:px-8">
         <div>
           <SectionHeading
             eyebrow={data.content.mission.subtitle ?? "Our Mission"}
@@ -217,9 +226,46 @@ export function HomeSections({ data }: { data: HomeData }) {
             ))}
           </div>
         </div>
-      </section>
-
-      <section id="departments" className="bg-[linear-gradient(180deg,rgba(237,244,255,0.8),rgba(255,255,255,0.94))] py-20 dark:bg-slate-900/40">
+      </section>,
+    ],
+    [
+      "leadership",
+      <section key="leadership" id="leadership" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeading
+          eyebrow={leadershipSection?.subtitle ?? "Leadership"}
+          title={leadershipSection?.title ?? "Meet the team guiding our church family"}
+          description={
+            leadershipSection?.body ??
+            "Pastoral care, campus mentorship, and church direction are shared by a team committed to prayerful leadership."
+          }
+        />
+        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          {data.leadership.map((leader) => (
+            <article
+              key={leader.id}
+              className="overflow-hidden rounded-[1.75rem] border border-[#dbe4f2] bg-white shadow-[0_24px_60px_-42px_rgba(12,43,87,0.42)] transition duration-300 hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-950"
+            >
+              <div className="relative h-64">
+                <Image src={leader.imageUrl ?? ""} alt={leader.name} fill className="object-cover" />
+              </div>
+              <div className="p-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.26em] text-[#123c74]">{leader.group}</p>
+                <h3 className="mt-3 font-serif text-2xl font-semibold text-slate-900 dark:text-white">{leader.name}</h3>
+                <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-300">{leader.role}</p>
+                <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{leader.bio}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>,
+    ],
+    [
+      "departments",
+      <section
+        key="departments"
+        id="departments"
+        className="bg-[linear-gradient(180deg,rgba(237,244,255,0.8),rgba(255,255,255,0.94))] py-20 dark:bg-slate-900/40"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Get Involved"
@@ -233,12 +279,7 @@ export function HomeSections({ data }: { data: HomeData }) {
                 className="overflow-hidden rounded-[1.75rem] border border-[#dbe4f2] bg-white shadow-[0_24px_60px_-42px_rgba(12,43,87,0.42)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_-38px_rgba(12,43,87,0.5)] dark:border-slate-800 dark:bg-slate-950"
               >
                 <div className="relative h-56 overflow-hidden">
-                  <Image
-                    src={department.imageUrl ?? ""}
-                    alt={department.name}
-                    fill
-                    className="object-cover transition duration-500 hover:scale-105"
-                  />
+                  <Image src={department.imageUrl ?? ""} alt={department.name} fill className="object-cover transition duration-500 hover:scale-105" />
                 </div>
                 <div className="p-6">
                   <h3 className="font-serif text-xl font-semibold text-slate-900 dark:text-white">{department.name}</h3>
@@ -251,9 +292,11 @@ export function HomeSections({ data }: { data: HomeData }) {
             ))}
           </div>
         </div>
-      </section>
-
-      <section id="music-choirs" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      </section>,
+    ],
+    [
+      "music-choirs",
+      <section key="music-choirs" id="music-choirs" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Worship Through Music"
           title="Glorifying God through choirs and praise teams"
@@ -266,12 +309,7 @@ export function HomeSections({ data }: { data: HomeData }) {
               className="rounded-[1.75rem] bg-[#0f274a] p-5 text-white shadow-[0_28px_60px_-42px_rgba(12,43,87,0.82)] transition duration-300 hover:-translate-y-1"
             >
               <div className="relative h-52 overflow-hidden rounded-[1.25rem]">
-                <Image
-                  src={group.imageUrl ?? ""}
-                  alt={group.name}
-                  fill
-                  className="object-cover transition duration-500 hover:scale-105"
-                />
+                <Image src={group.imageUrl ?? ""} alt={group.name} fill className="object-cover transition duration-500 hover:scale-105" />
               </div>
               <h3 className="mt-5 font-serif text-xl font-semibold">{group.name}</h3>
               <p className="mt-2 text-sm font-medium text-[#f2ddab]">{group.memberCount}+ members</p>
@@ -279,17 +317,14 @@ export function HomeSections({ data }: { data: HomeData }) {
             </article>
           ))}
         </div>
-      </section>
-
-      <section id="chaplain-message" className="bg-[#0b2343] py-20">
+      </section>,
+    ],
+    [
+      "chaplain-message",
+      <section key="chaplain-message" id="chaplain-message" className="bg-[#0b2343] py-20">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
           <div className="relative min-h-[360px] overflow-hidden rounded-[2rem]">
-            <Image
-              src={data.content["chaplain-message"].imageUrl ?? ""}
-              alt={data.content["chaplain-message"].title}
-              fill
-              className="object-cover"
-            />
+            <Image src={data.content["chaplain-message"].imageUrl ?? ""} alt={data.content["chaplain-message"].title} fill className="object-cover" />
           </div>
           <div className="flex flex-col justify-center">
             <SectionHeading
@@ -306,9 +341,11 @@ export function HomeSections({ data }: { data: HomeData }) {
             </Link>
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+      </section>,
+    ],
+    [
+      "next-steps",
+      <section key="next-steps" id="next-steps" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <SectionHeading
           eyebrow="Take the Next Step"
           title="Worship, serve, receive pastoral care, and grow in faith"
@@ -330,10 +367,10 @@ export function HomeSections({ data }: { data: HomeData }) {
               label: "Explore Ministries",
             },
             {
-              title: "Chaplaincy",
-              body: "Book time with our chaplaincy team for prayer, counseling, mentorship, and spiritual support.",
+              title: "Prayer & Support",
+              body: "Connect with our chaplaincy and leadership team for prayer, counseling, mentorship, and spiritual support.",
               href: "/leadership",
-              label: "Learn More",
+              label: "Request Care",
             },
           ].map((item) => (
             <article
@@ -348,9 +385,43 @@ export function HomeSections({ data }: { data: HomeData }) {
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="bg-[linear-gradient(180deg,rgba(248,241,223,0.38),rgba(255,255,255,0.96))] py-20 dark:bg-slate-900/40">
+      </section>,
+    ],
+    [
+      "resources",
+      <section key="resources" id="resources" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
+        <SectionHeading
+          eyebrow={resourcesSection?.subtitle ?? "Resources"}
+          title={resourcesSection?.title ?? "Faith-building tools for study and worship"}
+          description={
+            resourcesSection?.body ??
+            "Shareable downloads, study tools, and ministry-ready materials for students, leaders, and families."
+          }
+        />
+        <div className="mt-10 grid gap-6 lg:grid-cols-3">
+          {data.resources.map((resource) => (
+            <article
+              key={resource.id}
+              className="rounded-[1.75rem] border border-[#dde5f1] bg-white p-6 shadow-[0_24px_55px_-40px_rgba(12,43,87,0.35)] transition duration-300 hover:-translate-y-1 dark:border-slate-800 dark:bg-slate-950"
+            >
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#123c74]">{resource.category}</p>
+              <h3 className="mt-3 font-serif text-2xl font-semibold text-slate-900 dark:text-white">{resource.title}</h3>
+              <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{resource.description}</p>
+              <Link href={resource.fileUrl} className="mt-6 inline-flex text-sm font-semibold text-[#123c74]">
+                Open Resource
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>,
+    ],
+    [
+      "sermons",
+      <section
+        key="sermons"
+        id="sermons"
+        className="bg-[linear-gradient(180deg,rgba(248,241,223,0.38),rgba(255,255,255,0.96))] py-20 dark:bg-slate-900/40"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             eyebrow="Recent Messages"
@@ -365,9 +436,7 @@ export function HomeSections({ data }: { data: HomeData }) {
               >
                 <h3 className="font-serif text-xl font-semibold text-slate-900 dark:text-white">{sermon.title}</h3>
                 <p className="mt-2 text-sm font-medium text-[#123c74]">{sermon.preacher}</p>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  {formatDisplayDate(sermon.preachedAt)}
-                </p>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{formatDisplayDate(sermon.preachedAt)}</p>
                 <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-400">{sermon.summary}</p>
                 <Link href="/sermons" className="mt-6 inline-flex text-sm font-semibold text-[#123c74]">
                   Watch Sermons
@@ -376,7 +445,16 @@ export function HomeSections({ data }: { data: HomeData }) {
             ))}
           </div>
         </div>
-      </section>
+      </section>,
+    ],
+  ]);
+
+  return (
+    <>
+      {enabledSectionKeys.map((key) => {
+        const section = coreSections.get(key) ?? customSections.get(key);
+        return section ?? null;
+      })}
     </>
   );
 }

@@ -50,6 +50,122 @@ export const seedContentBlocks = [
   },
 ];
 
+export const seedHomepageSections = [
+  { key: "hero", displayOrder: 0, enabled: true, isCustom: false },
+  {
+    key: "gallery",
+    title: "Moments in Ministry",
+    subtitle: "Church Gallery",
+    body: "A living snapshot of worship, fellowship, music, mentorship, and service across the JOOUSDA church family.",
+    displayOrder: 1,
+    enabled: true,
+    isCustom: false,
+  },
+  { key: "this-week", displayOrder: 2, enabled: true, isCustom: false },
+  { key: "worship-schedule", displayOrder: 3, enabled: true, isCustom: false },
+  { key: "mission", displayOrder: 4, enabled: true, isCustom: false },
+  {
+    key: "history",
+    title: "Our History",
+    subtitle: "How God has led us",
+    body: "From a small student fellowship to a thriving worshiping family, JOOUSDA has grown through prayer, faithful leadership, and a passion to make disciples on campus and beyond.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?auto=format&fit=crop&w=1200&q=80",
+    ctaLabel: "Read Our Story",
+    ctaHref: "/about",
+    displayOrder: 5,
+    enabled: true,
+    isCustom: true,
+  },
+  {
+    key: "beliefs",
+    title: "What We Believe",
+    subtitle: "Anchored in Scripture",
+    body: "We cherish the authority of the Bible, salvation through Jesus Christ, the Sabbath, the ministry of prayer, and the blessed hope of Christ's soon return.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1200&q=80",
+    ctaLabel: "Explore Our Beliefs",
+    ctaHref: "/beliefs",
+    displayOrder: 6,
+    enabled: true,
+    isCustom: true,
+  },
+  {
+    key: "leadership",
+    title: "Leadership Spotlight",
+    subtitle: "Guiding with faith and care",
+    body: "Meet the spiritual leaders and ministry coordinators serving our congregation with prayer, vision, and pastoral warmth.",
+    displayOrder: 7,
+    enabled: true,
+    isCustom: false,
+  },
+  { key: "departments", displayOrder: 8, enabled: true, isCustom: false },
+  { key: "music-choirs", displayOrder: 9, enabled: true, isCustom: false },
+  { key: "chaplain-message", displayOrder: 10, enabled: true, isCustom: false },
+  { key: "next-steps", displayOrder: 11, enabled: true, isCustom: false },
+  {
+    key: "resources",
+    title: "Resources for Growth",
+    subtitle: "Study and worship tools",
+    body: "Download guides, revisit sermon themes, and share practical materials that support personal devotion and ministry.",
+    displayOrder: 12,
+    enabled: true,
+    isCustom: false,
+  },
+  { key: "sermons", displayOrder: 13, enabled: true, isCustom: false },
+];
+
+export const seedGalleryImages = [
+  {
+    title: "Sabbath Welcome",
+    caption: "Warm worship moments from the heart of JOOUSDA.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1519491050282-cf00c82424b4?auto=format&fit=crop&w=1200&q=80",
+    targetId: "hero",
+    displayOrder: 0,
+  },
+  {
+    title: "Prayer and Devotion",
+    caption: "Seeking God together in Scripture and prayer.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1504052434569-70ad5836ab65?auto=format&fit=crop&w=1200&q=80",
+    targetId: "mission",
+    displayOrder: 1,
+  },
+  {
+    title: "Departments in Action",
+    caption: "Every member serving with purpose and joy.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1200&q=80",
+    targetId: "departments",
+    displayOrder: 2,
+  },
+  {
+    title: "Choirs and Praise",
+    caption: "Music ministries lifting up Christ in worship.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1516280440614-37939bbacd81?auto=format&fit=crop&w=1200&q=80",
+    targetId: "music-choirs",
+    displayOrder: 3,
+  },
+  {
+    title: "Leadership Care",
+    caption: "Pastoral and student leadership walking with the church.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1469571486292-b53601020f36?auto=format&fit=crop&w=1200&q=80",
+    targetId: "leadership",
+    displayOrder: 4,
+  },
+  {
+    title: "Student Fellowship",
+    caption: "Campus discipleship, friendship, and mission.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1529419412599-7bb870e11810?auto=format&fit=crop&w=1200&q=80",
+    targetId: "next-steps",
+    displayOrder: 5,
+  },
+];
+
 export const seedServiceTimes = [
   ["Prophecy Class", "Saturday", "6:30 AM", "8:00 AM", "Early morning prophetic Bible study."],
   ["Sabbath School", "Saturday", "8:00 AM", "9:45 AM", "Interactive lesson discussion and class fellowship."],

@@ -6,6 +6,8 @@ import {
   contactSubmissions,
   departments,
   events,
+  galleryImages,
+  homepageSections,
   leadership,
   musicGroups,
   prayerRequests,
@@ -19,9 +21,11 @@ export async function getHomePageData() {
   noStore();
   await ensureDatabase();
 
-  const [contentBlocks, weeklyEvents, times, ministryItems, musicItems, featuredSermons] =
+  const [contentBlocks, sectionItems, galleryItems, weeklyEvents, times, ministryItems, musicItems, team, featuredSermons, resourceItems] =
     await Promise.all([
       db.select().from(siteContent),
+      db.select().from(homepageSections).orderBy(homepageSections.displayOrder),
+      db.select().from(galleryImages).orderBy(galleryImages.displayOrder),
       db
         .select()
         .from(events)
@@ -31,20 +35,26 @@ export async function getHomePageData() {
       db.select().from(serviceTimes).orderBy(serviceTimes.displayOrder),
       db.select().from(departments),
       db.select().from(musicGroups),
+      db.select().from(leadership).orderBy(leadership.displayOrder).limit(4),
       db
         .select()
         .from(sermons)
         .orderBy(desc(sermons.featured), desc(sermons.preachedAt))
         .limit(3),
+      db.select().from(resources).limit(3),
     ]);
 
   return {
     content: Object.fromEntries(contentBlocks.map((item) => [item.key, item])),
+    homepageSections: sectionItems,
+    galleryImages: galleryItems,
     weeklyEvents,
     serviceTimes: times,
     departments: ministryItems,
     musicGroups: musicItems,
+    leadership: team,
     sermons: featuredSermons,
+    resources: resourceItems,
   };
 }
 
@@ -52,9 +62,11 @@ export async function getAllPageData() {
   noStore();
   await ensureDatabase();
 
-  const [content, ministryItems, musicItems, team, sermonItems, resourceItems, eventItems] =
+  const [content, sectionItems, galleryItems, ministryItems, musicItems, team, sermonItems, resourceItems, eventItems] =
     await Promise.all([
       db.select().from(siteContent),
+      db.select().from(homepageSections).orderBy(homepageSections.displayOrder),
+      db.select().from(galleryImages).orderBy(galleryImages.displayOrder),
       db.select().from(departments),
       db.select().from(musicGroups),
       db.select().from(leadership).orderBy(leadership.group, leadership.displayOrder),
@@ -65,6 +77,8 @@ export async function getAllPageData() {
 
   return {
     content: Object.fromEntries(content.map((item) => [item.key, item])),
+    homepageSections: sectionItems,
+    galleryImages: galleryItems,
     departments: ministryItems,
     musicGroups: musicItems,
     leadership: team,
@@ -102,6 +116,8 @@ export async function getAdminData() {
 
   const [
     content,
+    sectionItems,
+    galleryItems,
     times,
     eventItems,
     ministryItems,
@@ -113,6 +129,8 @@ export async function getAdminData() {
     prayers,
   ] = await Promise.all([
     db.select().from(siteContent),
+    db.select().from(homepageSections).orderBy(homepageSections.displayOrder),
+    db.select().from(galleryImages).orderBy(galleryImages.displayOrder),
     db.select().from(serviceTimes).orderBy(serviceTimes.displayOrder),
     db.select().from(events).orderBy(desc(events.startDate)),
     db.select().from(departments),
@@ -126,6 +144,8 @@ export async function getAdminData() {
 
   return {
     content: Object.fromEntries(content.map((item) => [item.key, item])),
+    homepageSections: sectionItems,
+    galleryImages: galleryItems,
     serviceTimes: times,
     events: eventItems,
     departments: ministryItems,

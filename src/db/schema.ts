@@ -25,6 +25,29 @@ export const siteContent = pgTable("site_content", {
   updatedAt: text("updated_at").notNull().default(sql`CURRENT_TIMESTAMP`),
 });
 
+export const homepageSections = pgTable("homepage_sections", {
+  id: serial("id").primaryKey(),
+  key: text("key").notNull().unique(),
+  title: text("title"),
+  subtitle: text("subtitle"),
+  body: text("body"),
+  imageUrl: text("image_url"),
+  ctaLabel: text("cta_label"),
+  ctaHref: text("cta_href"),
+  displayOrder: integer("display_order").notNull().default(0),
+  enabled: boolean("enabled").notNull().default(true),
+  isCustom: boolean("is_custom").notNull().default(false),
+});
+
+export const galleryImages = pgTable("gallery_images", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  caption: text("caption"),
+  imageUrl: text("image_url").notNull(),
+  targetId: text("target_id"),
+  displayOrder: integer("display_order").notNull().default(0),
+});
+
 export const serviceTimes = pgTable("service_times", {
   id: serial("id").primaryKey(),
   title: text("title").notNull(),

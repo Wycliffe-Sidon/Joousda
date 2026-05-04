@@ -13,6 +13,29 @@ export const contentSchema = z.object({
   metadata: z.string().optional(),
 });
 
+export const homepageSectionSchema = z.object({
+  id: z.coerce.number().optional(),
+  key: z.string().min(2),
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
+  body: z.string().optional(),
+  imageUrl: z.string().optional(),
+  ctaLabel: z.string().optional(),
+  ctaHref: z.string().optional(),
+  displayOrder: z.coerce.number().default(0),
+  enabled: z.coerce.boolean().default(true),
+  isCustom: z.coerce.boolean().default(false),
+});
+
+export const galleryImageSchema = z.object({
+  id: z.coerce.number().optional(),
+  title: z.string().min(2),
+  caption: z.string().optional(),
+  imageUrl: z.string().min(4),
+  targetId: z.string().optional(),
+  displayOrder: z.coerce.number().default(0),
+});
+
 export const serviceTimeSchema = z.object({
   id: z.coerce.number().optional(),
   title: z.string().min(2),

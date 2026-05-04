@@ -5,6 +5,8 @@ import {
   admins,
   departments,
   events,
+  galleryImages,
+  homepageSections,
   leadership,
   musicGroups,
   resources,
@@ -16,6 +18,8 @@ import {
   seedContentBlocks,
   seedDepartments,
   seedEvents,
+  seedGalleryImages,
+  seedHomepageSections,
   seedLeadership,
   seedMusicGroups,
   seedResources,
@@ -49,6 +53,27 @@ function createTables() {
         secondary_cta_href TEXT,
         metadata TEXT,
         updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )`,
+      `CREATE TABLE IF NOT EXISTS homepage_sections (
+        id SERIAL PRIMARY KEY,
+        key TEXT NOT NULL UNIQUE,
+        title TEXT,
+        subtitle TEXT,
+        body TEXT,
+        image_url TEXT,
+        cta_label TEXT,
+        cta_href TEXT,
+        display_order INTEGER NOT NULL DEFAULT 0,
+        enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        is_custom BOOLEAN NOT NULL DEFAULT FALSE
+      )`,
+      `CREATE TABLE IF NOT EXISTS gallery_images (
+        id SERIAL PRIMARY KEY,
+        title TEXT NOT NULL,
+        caption TEXT,
+        image_url TEXT NOT NULL,
+        target_id TEXT,
+        display_order INTEGER NOT NULL DEFAULT 0
       )`,
       `CREATE TABLE IF NOT EXISTS service_times (
         id SERIAL PRIMARY KEY,
@@ -141,49 +166,57 @@ function createTables() {
 
 async function seedDatabase() {
   const [{ value: adminCount }] = await db.select({ value: count() }).from(admins);
-  if (adminCount > 0) {
-    return;
+  if (adminCount === 0) {
+    const adminEmail = process.env.ADMIN_EMAIL ?? "admin@joousda.org";
+    const adminPassword = process.env.ADMIN_PASSWORD ?? "ChangeMe123!";
+
+    await db.insert(admins).values({
+      email: adminEmail,
+      passwordHash: bcrypt.hashSync(adminPassword, 10),
+      name: "JOOUSDA Admin",
+      role: "admin",
+    });
+
+    await db.insert(siteContent).values(seedContentBlocks);
+    await db.insert(serviceTimes).values(
+      seedServiceTimes.map(([title, day, startTime, endTime, description], index) => ({
+        title,
+        day,
+        startTime,
+        endTime,
+        description,
+        displayOrder: index,
+      })),
+    );
+    await db.insert(departments).values(seedDepartments);
+    await db.insert(musicGroups).values(seedMusicGroups);
+    await db.insert(leadership).values(
+      seedLeadership.map(([name, role, group], index) => ({
+        name,
+        role,
+        group,
+        phone: `+254 7${(index + 11).toString().padStart(8, "0")}`,
+        email: `${name.toLowerCase().replace(/[^a-z]+/g, ".").replace(/\.+/g, ".").replace(/(^\.|\.$)/g, "")}@joousda.org`,
+        bio: `${name} serves the church through prayerful leadership, mentorship, and faithful campus ministry.`,
+        imageUrl:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80",
+        displayOrder: index,
+      })),
+    );
+    await db.insert(sermons).values(seedSermons);
+    await db.insert(resources).values(seedResources);
+    await db.insert(events).values(seedEvents);
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL ?? "admin@joousda.org";
-  const adminPassword = process.env.ADMIN_PASSWORD ?? "ChangeMe123!";
+  const [{ value: homepageSectionCount }] = await db.select({ value: count() }).from(homepageSections);
+  if (homepageSectionCount === 0) {
+    await db.insert(homepageSections).values(seedHomepageSections);
+  }
 
-  await db.insert(admins).values({
-    email: adminEmail,
-    passwordHash: bcrypt.hashSync(adminPassword, 10),
-    name: "JOOUSDA Admin",
-    role: "admin",
-  });
-
-  await db.insert(siteContent).values(seedContentBlocks);
-  await db.insert(serviceTimes).values(
-    seedServiceTimes.map(([title, day, startTime, endTime, description], index) => ({
-      title,
-      day,
-      startTime,
-      endTime,
-      description,
-      displayOrder: index,
-    })),
-  );
-  await db.insert(departments).values(seedDepartments);
-  await db.insert(musicGroups).values(seedMusicGroups);
-  await db.insert(leadership).values(
-    seedLeadership.map(([name, role, group], index) => ({
-      name,
-      role,
-      group,
-      phone: `+254 7${(index + 11).toString().padStart(8, "0")}`,
-      email: `${name.toLowerCase().replace(/[^a-z]+/g, ".").replace(/\.+/g, ".").replace(/(^\.|\.$)/g, "")}@joousda.org`,
-      bio: `${name} serves the church through prayerful leadership, mentorship, and faithful campus ministry.`,
-      imageUrl:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80",
-      displayOrder: index,
-    })),
-  );
-  await db.insert(sermons).values(seedSermons);
-  await db.insert(resources).values(seedResources);
-  await db.insert(events).values(seedEvents);
+  const [{ value: galleryCount }] = await db.select({ value: count() }).from(galleryImages);
+  if (galleryCount === 0) {
+    await db.insert(galleryImages).values(seedGalleryImages);
+  }
 }
 
 export async function ensureDatabase() {

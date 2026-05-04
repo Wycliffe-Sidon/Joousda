@@ -6,7 +6,7 @@ import { getAdminData } from "@/lib/site";
 
 export default async function AdminSettingsPage() {
   const data = await getAdminData();
-  const blocks = ["hero", "mission", "chaplain-message"] as const;
+  const blocks = ["hero", "mission", "chaplain-message", "beliefs-intro"] as const;
 
   return (
     <div className="space-y-8">

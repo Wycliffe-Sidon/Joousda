@@ -25,51 +25,59 @@ export type NavigationItem = {
 export const navigation: NavigationItem[] = [
   { href: "/", label: "Home" },
   {
-    href: "/about",
+    href: "/#mission",
     label: "About Us",
     description: "Know us better",
     children: [
-      { href: "/about#mission", label: "Our Mission", description: "Our purpose and calling" },
-      { href: "/about#history", label: "Our History", description: "How God has led this family" },
-      { href: "/beliefs", label: "What We Believe", description: "Biblical truths we cherish" },
-      { href: "/leadership", label: "Leadership", description: "Meet our spiritual guides" },
+      { href: "/#mission", label: "Our Mission", description: "Our purpose and calling" },
+      { href: "/#history", label: "Our History", description: "How God has led this family" },
+      { href: "/#beliefs", label: "What We Believe", description: "Biblical truths we cherish" },
+      { href: "/#leadership", label: "Leadership", description: "Meet our spiritual guides" },
     ],
   },
   {
-    href: "/about#departments",
+    href: "/#departments",
     label: "Ministries",
     description: "Church ministries",
     children: [
       { href: "/#departments", label: "Departments", description: "Serving through specialized ministries" },
       { href: "/#music-choirs", label: "Music & Choirs", description: "Voices lifted in worship" },
-      { href: "/contact", label: "Youth Ministry", description: "Growing disciples on campus" },
+      { href: "/#next-steps", label: "Youth & Students", description: "Growing disciples on campus" },
       { href: "/#worship-schedule", label: "Sabbath School", description: "Study, fellowship, and mission" },
+      { href: "/#departments", label: "Personal Ministries", description: "Outreach, visitation, and witness" },
     ],
   },
   {
-    href: "/resources",
+    href: "/#worship-schedule",
+    label: "Worship",
+    description: "Join us in worship",
+    children: [
+      { href: "/#worship-schedule", label: "Service Times", description: "Plan your Sabbath with us" },
+      { href: "/#sermons", label: "Live Stream", description: "Connect with worship online" },
+      { href: "/#sermons", label: "Sermons", description: "Recent messages and teachings" },
+    ],
+  },
+  {
+    href: "/#resources",
     label: "Media",
     description: "Spiritual resources",
     children: [
-      { href: "/sermons", label: "Sermons", description: "Watch and listen to messages" },
-      { href: "/contact", label: "Live Stream", description: "Join worship from anywhere" },
-      { href: "/resources", label: "Resources", description: "Study materials and guides" },
-      { href: "/resources#downloads", label: "Downloads", description: "Documents and media files" },
+      { href: "/#sermons", label: "Sermons", description: "Watch and listen to messages" },
+      { href: "/#resources", label: "Resources", description: "Study materials and guides" },
+      { href: "/#gallery", label: "Gallery", description: "Moments in worship and ministry" },
     ],
   },
   {
-    href: "/contact",
+    href: "/#next-steps",
     label: "Get Involved",
     description: "Take your next step",
     children: [
-      { href: "/contact", label: "Visit Us", description: "Plan your Sabbath with us" },
-      { href: "/contact#prayer-request", label: "Prayer Request", description: "Let us pray with you" },
+      { href: "/#next-steps", label: "Visit Us", description: "Plan your Sabbath with us" },
+      { href: "/#chaplain-message", label: "Prayer Request", description: "Let us pray with you" },
       { href: "/#departments", label: "Join a Ministry", description: "Serve with your gifts" },
-      { href: "/contact", label: "Volunteer", description: "Support outreach and worship" },
     ],
   },
-  { href: "/events", label: "Events" },
-  { href: "/contact", label: "Contact" },
+  { href: "/#next-steps", label: "Contact" },
 ];
 
 export const leadershipGroups = [

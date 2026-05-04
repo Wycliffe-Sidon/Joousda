@@ -5,6 +5,8 @@ import { logoutAction } from "@/app/admin/actions";
 const links = [
   ["Overview", "/admin"],
   ["Settings", "/admin/settings"],
+  ["Homepage", "/admin/homepage"],
+  ["Gallery", "/admin/gallery"],
   ["Events", "/admin/events"],
   ["Departments", "/admin/departments"],
   ["Music", "/admin/music"],

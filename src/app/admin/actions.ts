@@ -8,6 +8,8 @@ import { ensureDatabase } from "@/db/init";
 import {
   departments,
   events,
+  galleryImages,
+  homepageSections,
   leadership,
   musicGroups,
   resources,
@@ -19,6 +21,8 @@ import {
   contentSchema,
   departmentSchema,
   eventSchema,
+  galleryImageSchema,
+  homepageSectionSchema,
   leadershipSchema,
   musicGroupSchema,
   resourceSchema,
@@ -86,6 +90,75 @@ export async function saveContentBlock(formData: FormData) {
   revalidatePath("/about");
   revalidatePath("/beliefs");
   revalidatePath("/admin/settings");
+}
+
+export async function saveHomepageSection(formData: FormData) {
+  await ensureAdminSession();
+  await ensureDatabase();
+  const id = maybeNumber(formData, "id");
+  const data = homepageSectionSchema.parse({
+    id,
+    key: textValue(formData, "key"),
+    title: textValue(formData, "title"),
+    subtitle: textValue(formData, "subtitle"),
+    body: textValue(formData, "body"),
+    imageUrl: textValue(formData, "imageUrl"),
+    ctaLabel: textValue(formData, "ctaLabel"),
+    ctaHref: textValue(formData, "ctaHref"),
+    displayOrder: textValue(formData, "displayOrder"),
+    enabled: formData.has("enabled") ? formData.get("enabled") === "on" : true,
+    isCustom: formData.has("isCustom") ? formData.get("isCustom") === "on" : false,
+  });
+
+  if (data.id) {
+    await db.update(homepageSections).set(data).where(eq(homepageSections.id, data.id));
+  } else {
+    await db.insert(homepageSections).values(data);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/homepage");
+}
+
+export async function deleteHomepageSection(formData: FormData) {
+  await ensureAdminSession();
+  await ensureDatabase();
+  const id = Number(formData.get("id"));
+  await db.delete(homepageSections).where(eq(homepageSections.id, id));
+  revalidatePath("/");
+  revalidatePath("/admin/homepage");
+}
+
+export async function saveGalleryImage(formData: FormData) {
+  await ensureAdminSession();
+  await ensureDatabase();
+  const id = maybeNumber(formData, "id");
+  const data = galleryImageSchema.parse({
+    id,
+    title: textValue(formData, "title"),
+    caption: textValue(formData, "caption"),
+    imageUrl: textValue(formData, "imageUrl"),
+    targetId: textValue(formData, "targetId"),
+    displayOrder: textValue(formData, "displayOrder"),
+  });
+
+  if (data.id) {
+    await db.update(galleryImages).set(data).where(eq(galleryImages.id, data.id));
+  } else {
+    await db.insert(galleryImages).values(data);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/admin/gallery");
+}
+
+export async function deleteGalleryImage(formData: FormData) {
+  await ensureAdminSession();
+  await ensureDatabase();
+  const id = Number(formData.get("id"));
+  await db.delete(galleryImages).where(eq(galleryImages.id, id));
+  revalidatePath("/");
+  revalidatePath("/admin/gallery");
 }
 
 export async function saveServiceTime(formData: FormData) {

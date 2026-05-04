@@ -5,6 +5,8 @@ export default async function AdminDashboardPage() {
 
   const stats = [
     ["Featured weekly items", data.events.filter((item) => item.featured).length],
+    ["Homepage sections", data.homepageSections.length],
+    ["Gallery images", data.galleryImages.length],
     ["Departments", data.departments.length],
     ["Music groups", data.musicGroups.length],
     ["Leadership profiles", data.leadership.length],
