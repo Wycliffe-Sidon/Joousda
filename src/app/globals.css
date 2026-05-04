@@ -28,6 +28,11 @@ body {
   color: var(--foreground);
 }
 
+.dark {
+  --background: #071424;
+  --foreground: #f6f7fb;
+}
+
 ::selection {
   background: rgba(205, 168, 90, 0.28);
 }

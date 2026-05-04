@@ -6,6 +6,7 @@ const links = [
   ["Overview", "/admin"],
   ["Settings", "/admin/settings"],
   ["Homepage", "/admin/homepage"],
+  ["Streaming & Year", "/admin/streaming"],
   ["Gallery", "/admin/gallery"],
   ["Events", "/admin/events"],
   ["Departments", "/admin/departments"],

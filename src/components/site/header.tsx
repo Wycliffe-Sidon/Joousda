@@ -9,9 +9,6 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { navigation, siteConfig } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-const logoUrl =
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Logo_of_the_Seventh-day_Adventist_Church.svg/512px-Logo_of_the_Seventh-day_Adventist_Church.svg.png";
-
 export function Header() {
   const [open, setOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -59,22 +56,25 @@ export function Header() {
   );
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#d6dfed] bg-[rgba(255,253,248,0.94)] shadow-[0_18px_40px_-32px_rgba(12,43,87,0.95)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/88">
+    <header className="sticky top-0 z-50 border-b border-[#d6dfed] bg-[rgba(255,253,248,0.96)] shadow-[0_18px_40px_-32px_rgba(12,43,87,0.95)] backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/92">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-3" onClick={closeMenus}>
-          <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full border border-[#d5c191]/60 bg-white p-1 shadow-sm">
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-full border border-[#d5c191]/60 bg-white shadow-[0_16px_35px_-24px_rgba(16,63,121,0.7)] sm:h-[4.5rem] sm:w-[4.5rem]">
             <Image
-              src={logoUrl}
+              src="/images/sda-logo.png"
               alt="Seventh-day Adventist Church logo"
               fill
-              sizes="56px"
-              className="object-contain p-1"
+              sizes="72px"
+              className="object-contain p-1.5"
+              priority
             />
           </div>
           <div className="flex flex-col">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#123c74]">JOOUSDA</span>
-            <span className="font-serif text-lg font-semibold text-slate-900 dark:text-white sm:text-xl">SDA Church</span>
-            <span className="hidden text-xs text-slate-500 lg:block">{siteConfig.location}</span>
+            <span className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#123c74] dark:text-[#f2ddab]">JOOUSDA</span>
+            <span className="font-serif text-2xl font-semibold text-slate-900 dark:text-white sm:text-[2rem]">SDA Church</span>
+            <span className="max-w-[18rem] text-sm leading-6 text-slate-600 dark:text-slate-300 sm:max-w-none sm:text-base">
+              {siteConfig.location}
+            </span>
           </div>
         </Link>
 
@@ -92,7 +92,7 @@ export function Header() {
                   "rounded-full px-4 py-3 text-sm font-semibold transition",
                   isActive
                     ? "bg-[#eaf1ff] text-[#123c74]"
-                    : "text-slate-700 hover:bg-[#f5f8ff] hover:text-[#123c74] dark:text-slate-200",
+                    : "text-slate-800 hover:bg-[#f5f8ff] hover:text-[#123c74] dark:text-slate-100",
                 ),
               );
             }
@@ -112,7 +112,7 @@ export function Header() {
                     "inline-flex items-center gap-1 rounded-full px-4 py-3 text-sm font-semibold transition",
                     expanded
                       ? "bg-[#eaf1ff] text-[#123c74]"
-                      : "text-slate-700 hover:bg-[#f5f8ff] hover:text-[#123c74] dark:text-slate-200",
+                      : "text-slate-800 hover:bg-[#f5f8ff] hover:text-[#123c74] dark:text-slate-100",
                   )}
                 >
                   {item.label}
@@ -121,24 +121,24 @@ export function Header() {
 
                 <div
                   className={cn(
-                    "absolute left-0 top-full mt-3 w-[22rem] rounded-[1.6rem] border border-[#d6dfed] bg-white p-4 shadow-[0_30px_60px_-35px_rgba(12,43,87,0.65)] transition-all dark:border-slate-800 dark:bg-slate-950",
+                    "absolute left-0 top-full mt-3 w-[18.5rem] rounded-[1.35rem] border border-[#d6dfed] bg-white p-3 shadow-[0_30px_60px_-35px_rgba(12,43,87,0.65)] transition-all dark:border-slate-800 dark:bg-slate-950",
                     expanded ? "visible translate-y-0 opacity-100" : "invisible -translate-y-2 opacity-0",
                   )}
                 >
-                  <div className="rounded-2xl bg-[#123c74] px-4 py-4 text-white">
+                  <div className="rounded-[1rem] bg-[#123c74] px-3 py-3 text-white">
                     <p className="text-xs font-semibold uppercase tracking-[0.25em] opacity-80">{item.description}</p>
-                    <p className="mt-2 font-serif text-xl font-semibold">{item.label}</p>
+                    <p className="mt-1.5 font-serif text-lg font-semibold">{item.label}</p>
                   </div>
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-2.5 space-y-1.5">
                     {item.children?.map((child) => (
                       <button
                         key={child.href}
                         type="button"
                         onClick={() => handleNavigation(child.href)}
-                        className="block w-full rounded-2xl border border-slate-200 px-4 py-3 text-left transition hover:border-[#cfdcf3] hover:bg-[#f7faff] dark:border-slate-800 dark:hover:bg-slate-900"
+                        className="block w-full rounded-[1rem] border border-slate-200 px-3 py-2.5 text-left transition hover:border-[#cfdcf3] hover:bg-[#f7faff] dark:border-slate-800 dark:hover:bg-slate-900"
                       >
-                        <p className="text-base font-semibold text-slate-900 dark:text-white">{child.label}</p>
-                        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{child.description}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{child.label}</p>
+                        <p className="mt-0.5 text-xs leading-5 text-slate-600 dark:text-slate-300">{child.description}</p>
                       </button>
                     ))}
                   </div>
@@ -168,24 +168,24 @@ export function Header() {
           open ? "max-h-[85vh]" : "max-h-0",
         )}
       >
-        <nav className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-4 sm:px-6">
+        <nav className="mx-auto flex max-w-7xl flex-col gap-2 overflow-y-auto px-4 py-4 sm:px-6">
           {navigation.map((item) => {
             if (!item.children?.length) {
               return renderNavLink(
                 item.href,
                 item.href,
                 item.label,
-                "rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-700 transition hover:bg-[#f4f7ff] hover:text-[#123c74] dark:text-slate-200",
+                "rounded-2xl px-4 py-3 text-left text-sm font-semibold text-slate-800 transition hover:bg-[#f4f7ff] hover:text-[#123c74] dark:text-slate-100",
               );
             }
 
             const expanded = mobileDropdown === item.label;
 
             return (
-              <div key={item.label} className="rounded-[1.5rem] border border-[#dce4f2] bg-white/90 p-2">
+              <div key={item.label} className="rounded-[1.25rem] border border-[#dce4f2] bg-white/95 p-2 dark:bg-slate-900/95">
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-800"
+                  className="flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm font-semibold text-slate-900 dark:text-white"
                   onClick={() => setMobileDropdown((current) => (current === item.label ? null : item.label))}
                 >
                   <span>{item.label}</span>
@@ -196,16 +196,16 @@ export function Header() {
                     <div className="rounded-2xl bg-[#123c74] px-4 py-3 text-white">
                       <p className="text-xs font-semibold uppercase tracking-[0.24em] opacity-80">{item.description}</p>
                     </div>
-                    <div className="mt-2 space-y-2">
+                    <div className="mt-2 space-y-1.5">
                       {item.children.map((child) => (
                         <button
                           key={child.href}
                           type="button"
                           onClick={() => handleNavigation(child.href)}
-                          className="block w-full rounded-2xl border border-slate-200 px-4 py-3 text-left"
+                          className="block w-full rounded-[1rem] border border-slate-200 px-4 py-2.5 text-left dark:border-slate-700 dark:bg-slate-950/70"
                         >
-                          <p className="text-sm font-semibold text-slate-900">{child.label}</p>
-                          <p className="mt-1 text-xs text-slate-500">{child.description}</p>
+                          <p className="text-sm font-semibold text-slate-900 dark:text-white">{child.label}</p>
+                          <p className="mt-0.5 text-xs leading-5 text-slate-600 dark:text-slate-300">{child.description}</p>
                         </button>
                       ))}
                     </div>

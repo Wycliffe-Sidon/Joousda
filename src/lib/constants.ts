@@ -30,9 +30,9 @@ export const navigation: NavigationItem[] = [
     description: "Know us better",
     children: [
       { href: "/#mission", label: "Our Mission", description: "Our purpose and calling" },
-      { href: "/#history", label: "Our History", description: "How God has led this family" },
-      { href: "/#beliefs", label: "What We Believe", description: "Biblical truths we cherish" },
       { href: "/#leadership", label: "Leadership", description: "Meet our spiritual guides" },
+      { href: "/#beliefs", label: "What We Believe", description: "Biblical truths we cherish" },
+      { href: "/#history", label: "History", description: "How God has led this family" },
     ],
   },
   {
@@ -42,18 +42,17 @@ export const navigation: NavigationItem[] = [
     children: [
       { href: "/#departments", label: "Departments", description: "Serving through specialized ministries" },
       { href: "/#music-choirs", label: "Music & Choirs", description: "Voices lifted in worship" },
-      { href: "/#next-steps", label: "Youth & Students", description: "Growing disciples on campus" },
+      { href: "/#year-on-duty", label: "Youth Ministry", description: "Student discipleship and campus mission" },
       { href: "/#worship-schedule", label: "Sabbath School", description: "Study, fellowship, and mission" },
-      { href: "/#departments", label: "Personal Ministries", description: "Outreach, visitation, and witness" },
     ],
   },
   {
-    href: "/#worship-schedule",
+    href: "/#live-stream",
     label: "Worship",
     description: "Join us in worship",
     children: [
       { href: "/#worship-schedule", label: "Service Times", description: "Plan your Sabbath with us" },
-      { href: "/#sermons", label: "Live Stream", description: "Connect with worship online" },
+      { href: "/#live-stream", label: "Live Stream", description: "Connect with worship online" },
       { href: "/#sermons", label: "Sermons", description: "Recent messages and teachings" },
     ],
   },
@@ -65,6 +64,7 @@ export const navigation: NavigationItem[] = [
       { href: "/#sermons", label: "Sermons", description: "Watch and listen to messages" },
       { href: "/#resources", label: "Resources", description: "Study materials and guides" },
       { href: "/#gallery", label: "Gallery", description: "Moments in worship and ministry" },
+      { href: "/#resources", label: "Downloads", description: "PDFs, guides, and ministry files" },
     ],
   },
   {

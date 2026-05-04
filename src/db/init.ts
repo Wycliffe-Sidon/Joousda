@@ -208,10 +208,9 @@ async function seedDatabase() {
     await db.insert(events).values(seedEvents);
   }
 
-  const [{ value: homepageSectionCount }] = await db.select({ value: count() }).from(homepageSections);
-  if (homepageSectionCount === 0) {
-    await db.insert(homepageSections).values(seedHomepageSections);
-  }
+  await db.insert(siteContent).values(seedContentBlocks).onConflictDoNothing();
+
+  await db.insert(homepageSections).values(seedHomepageSections).onConflictDoNothing();
 
   const [{ value: galleryCount }] = await db.select({ value: count() }).from(galleryImages);
   if (galleryCount === 0) {

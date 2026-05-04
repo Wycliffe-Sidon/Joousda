@@ -24,10 +24,12 @@ import {
   galleryImageSchema,
   homepageSectionSchema,
   leadershipSchema,
+  liveStreamSchema,
   musicGroupSchema,
   resourceSchema,
   sermonSchema,
   serviceTimeSchema,
+  yearOnDutySchema,
 } from "@/lib/validations";
 
 function textValue(formData: FormData, key: string) {
@@ -90,6 +92,104 @@ export async function saveContentBlock(formData: FormData) {
   revalidatePath("/about");
   revalidatePath("/beliefs");
   revalidatePath("/admin/settings");
+}
+
+async function upsertContentBlock(data: {
+  key: string;
+  title: string;
+  subtitle?: string;
+  body?: string;
+  imageUrl?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
+  secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
+  metadata?: string;
+}) {
+  await db
+    .insert(siteContent)
+    .values(data)
+    .onConflictDoUpdate({
+      target: siteContent.key,
+      set: {
+        ...data,
+        updatedAt: new Date().toISOString(),
+      },
+    });
+}
+
+export async function saveYearOnDuty(formData: FormData) {
+  await ensureAdminSession();
+  await ensureDatabase();
+
+  const data = yearOnDutySchema.parse({
+    title: textValue(formData, "title"),
+    subtitle: textValue(formData, "subtitle"),
+    body: textValue(formData, "body"),
+    currentYear: textValue(formData, "currentYear"),
+    theme: textValue(formData, "theme"),
+    keyText: textValue(formData, "keyText"),
+    sopBook: textValue(formData, "sopBook"),
+    guideTitle: textValue(formData, "guideTitle"),
+    guideUrl: textValue(formData, "guideUrl"),
+    ctaLabel: textValue(formData, "ctaLabel"),
+    ctaHref: textValue(formData, "ctaHref"),
+  });
+
+  await upsertContentBlock({
+    key: "year-on-duty",
+    title: data.title,
+    subtitle: data.subtitle,
+    body: data.body,
+    ctaLabel: data.ctaLabel,
+    ctaHref: data.ctaHref,
+    metadata: JSON.stringify({
+      currentYear: data.currentYear,
+      theme: data.theme,
+      keyText: data.keyText,
+      sopBook: data.sopBook,
+      guideTitle: data.guideTitle,
+      guideUrl: data.guideUrl,
+    }),
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/streaming");
+}
+
+export async function saveLiveStream(formData: FormData) {
+  await ensureAdminSession();
+  await ensureDatabase();
+
+  const data = liveStreamSchema.parse({
+    title: textValue(formData, "title"),
+    subtitle: textValue(formData, "subtitle"),
+    body: textValue(formData, "body"),
+    eventDate: textValue(formData, "eventDate"),
+    status: textValue(formData, "status"),
+    youtubeUrl: textValue(formData, "youtubeUrl"),
+    embedCode: textValue(formData, "embedCode"),
+    ctaLabel: textValue(formData, "ctaLabel"),
+    ctaHref: textValue(formData, "ctaHref"),
+  });
+
+  await upsertContentBlock({
+    key: "live-stream",
+    title: data.title,
+    subtitle: data.subtitle,
+    body: data.body,
+    ctaLabel: data.ctaLabel,
+    ctaHref: data.ctaHref,
+    metadata: JSON.stringify({
+      eventDate: data.eventDate,
+      status: data.status,
+      youtubeUrl: data.youtubeUrl,
+      embedCode: data.embedCode,
+    }),
+  });
+
+  revalidatePath("/");
+  revalidatePath("/admin/streaming");
 }
 
 export async function saveHomepageSection(formData: FormData) {

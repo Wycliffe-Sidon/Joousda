@@ -109,6 +109,32 @@ export const resourceSchema = z.object({
   category: z.string().min(2),
 });
 
+export const yearOnDutySchema = z.object({
+  title: z.string().min(2),
+  subtitle: z.string().min(2),
+  body: z.string().min(10),
+  currentYear: z.string().min(2),
+  theme: z.string().min(2),
+  keyText: z.string().min(8),
+  sopBook: z.string().min(2),
+  guideTitle: z.string().min(2),
+  guideUrl: z.string().min(4),
+  ctaLabel: z.string().min(2),
+  ctaHref: z.string().min(4),
+});
+
+export const liveStreamSchema = z.object({
+  title: z.string().min(2),
+  subtitle: z.string().min(2),
+  body: z.string().min(10),
+  eventDate: z.string().min(2),
+  status: z.enum(["Live Now", "Upcoming"]),
+  youtubeUrl: z.string().min(6),
+  embedCode: z.string().min(6),
+  ctaLabel: z.string().min(2),
+  ctaHref: z.string().min(4),
+});
+
 export const contactSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
